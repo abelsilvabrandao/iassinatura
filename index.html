@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador de Assinaturas</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <script type="module" src="script.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Gerador de Assinaturas</h1>
+    <button id="add-unit-button">Cadastrar Unidades</button>  
+    
+    <form id="signature-form">
+
+      <label for="unit">Unidade:</label>
+      <select id="unit" required></select>   
+
+      <label for="name">Nome:</label>
+      <input type="text" id="name" placeholder="Nome do Colaborador" required>
+
+      <label for="sector">Setor:</label>
+      <input type="text" id="sector" placeholder="Setor do Colaborador" required>
+
+      <label for="email">E-mail:</label>
+      <input type="text" id="email" placeholder="intermaritima@intermaritima.com.br" list="email-suggestions" required>
+      <datalist id="email-suggestions">
+          <!-- As opções serão adicionadas dinamicamente -->
+      </datalist>
+
+      <label for="phone">Telefone(s) de Contato (Opcional):</label>
+      <input type="text" id="phone" placeholder="(00) 90000-0000 ou Fixo : (00) 0000-0000" list="phone-suggestions" >
+
+      <button type="submit">Gerar Assinatura</button>
+    </form>
+
+    <div id="preview">
+      <h2>Pré-visualização:</h2>
+      <div id="signature-preview"></div>
+      <canvas id="signature-canvas" style="border: 1px solid black;"></canvas>
+      <div>
+        <div>
+          <button id="download-button" style="display: none;">Baixar Assinatura</button>
+          <button id="send-email-button" style="display: none;">Enviar por E-mail</button>
+        </div>      
+      </div>     
+    </div>
+  </div>
+</body>
+</html>

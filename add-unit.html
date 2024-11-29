@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Unidades - Intermarítima</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="script.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Cadastro de Unidades</h1>
+    <button id="new-unit-button">Adicionar Nova Unidade</button>
+    <button type="button" onclick="window.location.href='index.html'">Voltar</button>
+
+    <h2>Unidades Cadastradas</h2>
+    <table id="units-list">
+      <thead>
+        <tr>
+          <th>Logo</th>
+          <th>Unidade</th>
+          <th>CNPJ</th>
+          <th>Endereço</th>
+          <th>CEP</th>
+          <th>Certificações</th>
+          <th>Site</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- As unidades cadastradas serão inseridas aqui -->
+      </tbody>
+    </table>
+
+    <!-- Modal para criação/edição de unidades -->
+    <div id="unit-modal" class="modal hidden">
+      <div class="modal-content">
+        <span class="close-button" onclick="document.getElementById('unit-modal').classList.add('hidden'); clearModal();">&times;</span>
+        <h2>Adicionar/Editar Unidade</h2>
+        <form id="unit-form">  
+          <label for="unit-name">Nome da Unidade</label>
+          <input type="text" id="unit-name" placeholder="Nome da unidade" required>
+    
+          <label for="cnpj">CNPJ</label>
+          <input type="text" id="cnpj" placeholder="00.000.000/0000-00" required>
+
+          <label for="cep">CEP</label>
+          <input type="text" id="cep" placeholder="00.000-000" required onblur="fetchAddress()">
+          
+          <label for="address">Logradouro</label>
+          <input type="text" id="address" placeholder="Logradouro" required>
+    
+          <label for="number">Número</label>
+          <input type="text" id="number" placeholder="Número do endereço" required>
+    
+          <label for="complement">Complemento</label>
+          <input type="text" id="complement" placeholder="Apto, Bloco, etc.">
+    
+          <label for="neighborhood">Bairro</label>
+          <input type="text" id="neighborhood" placeholder="Nome do bairro" required>
+    
+          <label for="city">Cidade</label>
+          <input type="text" id="city" placeholder="Nome da cidade" required>
+    
+          <label for="state">Estado</label>
+          <input type="text" id="state" placeholder="Sigla do estado" required>
+       
+          <label for="site">Site</label>
+          <input type="url" id="site" placeholder="https://www.intermaritima.com.br" required>
+    
+          <label for="image">Logo:</label>
+          <input type="file" id="image" accept="image/*">
+          <img id="current-image" src="" alt="Logo atual" style="display: none; width: 100px; height: auto; margin-top: 10px;">
+    
+          <div id="certifications-container"></div>   
+          <button type="button" id="add-certification">Adicionar Certificação</button>
+          <button type="submit">Salvar</button>
+          <button type="button" onclick="document.getElementById('unit-modal').classList.add('hidden'); clearModal();">Cancelar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
