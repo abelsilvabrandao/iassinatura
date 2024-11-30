@@ -465,71 +465,202 @@ window.deleteUnit = async function(unitId) {
 
 // Defina a função no escopo global
 window.formatCep = function(event) {
-  // Remove caracteres não numéricos
   let value = event.target.value.replace(/\D/g, '');
-
-  // Limita o número de caracteres a 8
   if (value.length > 8) {
     value = value.slice(0, 8);
   }
 
-  // Formata o CEP
+  // Formatar o CEP do endereço das Unidades inter
   if (value.length > 5) {
     value = value.replace(/(\d{5})(\d)/, '$1-$2');
   }
 
-  event.target.value = value; // Atualiza o valor do campo de entrada
+  event.target.value = value;
 }
 
-const emailInput = document.getElementById("email");
-const emailSuggestions = document.getElementById("email-suggestions");
+const emailInput = document.getElementById('email');
+const emailSuggestions = document.getElementById('email-suggestions');
 
-// Adiciona um evento de entrada ao campo de e-mail
+const isValidEmail = (email) => {
+    // Regex para validar formato de e-mail
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@(intermaritima\.com\.br|intersal\.com\.br)$/;
+    return emailRegex.test(email);
+  };
+  
+
+// Para demonstrar a sugestão de e-mail somente inter e intersal
 emailInput.addEventListener("input", () => {
-  const value = emailInput.value;
+    const value = emailInput.value.trim();
+  
+    if (isValidEmail(value)) {
+      emailInput.style.borderColor = "green"; // Borda verde para válido
+    } else {
+      emailInput.style.borderColor = "red"; // Borda vermelha para inválido
+    }
+  
+    // Sugestões de e-mail
+    if (value.includes('@')) {
+      emailSuggestions.innerHTML = `
+        <option value="${value.split('@')[0]}@intermaritima.com.br">
+        <option value="${value.split('@')[0]}@intersal.com.br">
+      `;
+    } else {
+      emailSuggestions.innerHTML = '';
+    }
+  });
+  
 
-  // Verifica se o valor contém o símbolo '@'
-  if (value.includes('@')) {
-    // Limpa as opções existentes
-    emailSuggestions.innerHTML = `
-      <option value="${value.split('@')[0]}@intermaritima.com.br">
-      <option value="${value.split('@')[0]}@intersal.com.br">
-    `;
-  } else {
-    // Limpa as opções se não houver '@'
-    emailSuggestions.innerHTML = '';
-  }
-});
 
-document.getElementById("phone").addEventListener("input", function(event) {
-  let value = event.target.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+document.addEventListener("DOMContentLoaded", () => {
+    const phonesContainer = document.getElementById("phones-container");
+    const addPhoneButton = document.getElementById("add-phone");
+  
+    // Função para adicionar um novo campo de telefone
+    const addPhoneField = () => {
+        const phoneDiv = document.createElement("div");
+        phoneDiv.classList.add("phone-input");
+      
+        phoneDiv.innerHTML = `
+          <input type="text" name="phone" class="phone-field" placeholder="(00) 90000-0000">
+          <select class="phone-type">
+            <option value="fixo">Fixo</option>
+            <option value="celular" selected>Celular</option>
+          </select>
+          <button type="button" class="remove-phone">-</button>
+        `;
+      
+        const phoneInput = phoneDiv.querySelector(".phone-field");
+        const phoneType = phoneDiv.querySelector(".phone-type");
+      
+        // Adiciona evento de entrada para formatar o telefone
+        phoneInput.addEventListener("input", () => {
+          phoneInput.value = formatPhone(phoneInput.value, phoneType.value);
+        });
+      
+        // Atualiza a formatação ao trocar o tipo
+        phoneType.addEventListener("change", () => {
+          phoneInput.value = formatPhone(phoneInput.value, phoneType.value);
+        });
+      
+        const removeButton = phoneDiv.querySelector(".remove-phone");
+        removeButton.addEventListener("click", () => {
+          phonesContainer.removeChild(phoneDiv);
+      
+          // Esconde o botão de remover se houver apenas um campo
+          if (phonesContainer.children.length === 1) {
+            const remainingRemoveButton = phonesContainer.querySelector(".remove-phone");
+            remainingRemoveButton.classList.add("hidden");
+          }
+        });
+      
+        phonesContainer.appendChild(phoneDiv);
+      
+        // Mostra o botão de remover em todos os campos
+        document.querySelectorAll(".remove-phone").forEach(btn => btn.classList.remove("hidden"));
+      };
+      
 
-  if (value.length > 11) {
-      value = value.slice(0, 11); // Limita o tamanho do telefone a 10 dígitos
-  }
+  
+    // Adiciona o evento ao botão "Adicionar Telefone"
+    if (addPhoneButton) {
+      addPhoneButton.addEventListener("click", addPhoneField);
+    }
+  
+// Configuração do botão "Remover" no campo inicial
+const initialRemoveButton = phonesContainer.querySelector(".remove-phone");
+if (initialRemoveButton) {
+  initialRemoveButton.classList.add("hidden");
+}
 
-  // Formata o telefone
-  if (value.length > 6) {
-      value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3'); // Formato (XX) 9XXXX-XXXX
-  } else if (value.length > 2) {
-      value = value.replace(/(\d{2})(\d)/, '($1) $2'); // Formato (XX) X
-  } else if (value.length > 0) {
-      value = value.replace(/(\d)/, '($1'); // Formato (X
-  }
+// Adiciona suporte à formatação dinâmica no campo inicial
+const initialPhoneField = phonesContainer.querySelector(".phone-field");
+const initialPhoneType = phonesContainer.querySelector(".phone-type");
 
-  event.target.value = value; // Atualiza o valor do campo de entrada
-});
+if (initialPhoneField && initialPhoneType) {
+  // Evento para formatar o número enquanto o usuário digita
+  initialPhoneField.addEventListener("input", () => {
+    initialPhoneField.value = formatPhone(initialPhoneField.value, initialPhoneType.value);
+  });
+
+  // Evento para reformatar ao trocar o tipo entre fixo e celular
+  initialPhoneType.addEventListener("change", () => {
+    initialPhoneField.value = formatPhone(initialPhoneField.value, initialPhoneType.value);
+  });
+}
+  });
+  
+  // Função para capturar e formatar os telefones
+  const getFormattedPhones = () => {
+    const phoneInputs = Array.from(document.querySelectorAll(".phone-input"));
+    const phones = { fixo: [], celular: [] };
+  
+    phoneInputs.forEach(input => {
+      const phone = input.querySelector(".phone-field").value.trim();
+      const type = input.querySelector(".phone-type").value;
+  
+      if (phone) phones[type].push(phone);
+    });
+  
+    let phoneText = "";
+    if (phones.fixo.length > 0) {
+      phoneText += `Fixo: ${phones.fixo.join(" / ")}`;
+    }
+    if (phones.celular.length > 0) {
+      if (phoneText) phoneText += " ";
+      phoneText += `Cel.: +55 ${phones.celular.join(" / ")}`;
+    }
+  
+    return phoneText;
+  };
+
+  const formatPhone = (value, type) => {
+    // Remove todos os caracteres que não sejam números
+    value = value.replace(/\D/g, '');
+  
+    if (type === 'fixo') {
+      // Limita a 10 dígitos para números fixos
+      value = value.slice(0, 10);
+  
+      // Formata como (XX) XXXX-XXXX
+      if (value.length > 6) {
+        value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+      } else if (value.length > 2) {
+        value = value.replace(/(\d{2})(\d{0,4})/, '($1) $2');
+      }
+    } else if (type === 'celular') {
+      // Limita a 11 dígitos para celulares
+      value = value.slice(0, 11);
+  
+      // Formata como (XX) X XXXX-XXXX
+      if (value.length > 7) {
+        value = value.replace(/(\d{2})(\d{1})(\d{4})(\d{0,4})/, '($1) $2 $3-$4');
+      } else if (value.length > 2) {
+        value = value.replace(/(\d{2})(\d{1})(\d{0,4})/, '($1) $2 $3');
+      }
+    }
+  
+    return value;
+  };
+  
 
 // Função para gerar assinatura
 document.getElementById("signature-form").addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  // Captura os dados do formulário
-  const unit = document.getElementById("unit").value;
-  const name = document.getElementById("name").value;
-  const sector = document.getElementById("sector").value;
-  const email = document.getElementById("email").value;
-  const phone = document.getElementById("phone").value;
+    event.preventDefault();
+  
+    const emailInput = document.getElementById("email");
+    const email = emailInput.value.trim();
+  
+    // Valida o e-mail antes de continuar
+    if (!isValidEmail(email)) {
+      Swal.fire("Erro", "Por favor, insira um e-mail válido de 'intermaritima.com.br' ou 'intersal.com.br'.", "error");
+      return;
+    }
+  
+    // Captura os outros dados do formulário
+    const unit = document.getElementById("unit").value;
+    const name = document.getElementById("name").value;
+    const sector = document.getElementById("sector").value;
+    const phoneText = getFormattedPhones(); // Telefones formatados
 
   // Captura os dados da unidade
   const unitData = await getUnitData(unit);
@@ -559,6 +690,8 @@ document.getElementById("signature-form").addEventListener("submit", async (even
 
   logoImage.onload = () => {
       ctx.drawImage(logoImage, 40, 40, 150, 75);
+
+      //Linha separadora
       ctx.setLineDash([5, 5]);
       ctx.beginPath();
       ctx.moveTo(250, 20);
@@ -598,18 +731,17 @@ document.getElementById("signature-form").addEventListener("submit", async (even
       ctx.fillText(name, 270, 40);
       ctx.font = "14px Arial";
       ctx.fillText(sector, 270, 60);
-      ctx.font = "14px Arial";
       ctx.fillText(email, 270, 80);
       ctx.font = "bold 12px Arial";
-      if (phone) ctx.fillText(phone, 270, 170);
+      if (phoneText) ctx.fillText(phoneText, 270, 170);
 
-      // Linha horizontal adaptável ao endereço completo
+        // Outros detalhes (endereço, etc.)
       const formattedAddress = `${address}, ${number}${complement ? ' ' + complement : ''}${neighborhood ? ', ' + neighborhood : ''}`;
       const addressText = `${formattedAddress} ${city} - ${state} CEP: ${cep}`;
       const lineWidth = ctx.measureText(addressText).width;
       const maxLineWidth = canvas.width / scaleFactor - 245 - 40; // Limita a largura
       const actualLineWidth = Math.min(lineWidth, maxLineWidth);
-
+      // Linha horizontal adaptável ao endereço completo
       ctx.setLineDash([5, 5]);
       ctx.beginPath();
       ctx.moveTo(270, 105);

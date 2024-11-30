@@ -6,7 +6,7 @@
   <title>Gerador de Assinaturas</title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <script type="module" src="script.js" defer></script>
+  <script type="module" src="script2.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
@@ -30,9 +30,19 @@
       <datalist id="email-suggestions">
           <!-- As opções serão adicionadas dinamicamente -->
       </datalist>
-
-      <label for="phone">Telefone(s) de Contato (Opcional):</label>
-      <input type="text" id="phone" placeholder="(00) 90000-0000 ou Fixo : (00) 0000-0000" list="phone-suggestions" >
+      <label for="phones-container">Telefone(s) de Contato (Opcional):</label>
+      <div id="phones-container">
+        <!-- Campo de telefone inicial -->
+        <div class="phone-input">
+          <input type="text" name="phone" class="phone-field" placeholder="(00) 90000-0000">
+          <select class="phone-type">
+            <option value="fixo">Fixo</option>
+            <option value="celular" selected>Celular</option>
+          </select>
+          <button type="button" class="remove-phone hidden">-</button>
+        </div>
+      </div>
+      <button type="button" id="add-phone">Adicionar + Telefones</button>
 
       <button type="submit">Gerar Assinatura</button>
     </form>

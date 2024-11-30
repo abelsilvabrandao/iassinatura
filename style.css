@@ -129,3 +129,31 @@ td button.delete:hover {
   float: right;
   font-size: 20px;
 }
+
+.phone-input {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.phone-field {
+  flex: 1;
+  margin-right: 5px;
+}
+
+.phone-type {
+  margin-right: 5px;
+}
+
+.remove-phone {
+  background-color: #dc3545; /* Vermelho */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.remove-phone.hidden {
+  display: none;
+}
