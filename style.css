@@ -1,3 +1,4 @@
+/* Estilo Básico para Ambas as Páginas */
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
@@ -6,6 +7,7 @@ body {
 }
 
 .container {
+  max-width: 900px;
   margin: auto;
   background: white;
   padding: 20px;
@@ -17,17 +19,20 @@ h1 {
   text-align: center;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-}
-
 label {
+  font-size: 0.9rem;
   margin: 10px 0 5px;
 }
 
+.form-preview-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 input, select, button {
-  padding: 10px;
+  width: 100%;
+  padding: 8px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -38,12 +43,14 @@ button {
   color: white;
   border: none;
   cursor: pointer;
+  font-size: 0.9rem;
 }
 
 button:hover {
   background-color: #1b5d2a;
 }
 
+/* Tabelas */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -73,30 +80,65 @@ td button.delete:hover {
   background-color: #c82333; /* Vermelho escuro */
 }
 
+  /* Botões com ícones */
+  #download-button .icon,
+  #send-email-button .icon {
+    margin-right: 5px;
+  }
 
-.certification-button {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
 
-.certification-button:hover {
-  background-color: #124b1f;
-}
+  /* Estilo de telefones */
+  .phone-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .phone-field {
+    flex: 1;
+  }
+  
+  .phone-type {
+    flex: 0 0 85px;
+  }
+  
+  .add-phone {
+    flex: 0 0 30px;
+    height: 30px;
+    font-size: 1rem;
+    background-color: #28a745;
+    color: #fff;
+    border-radius: 50%;
+    text-align: center;
+    padding: 0;
+  }
 
-/* Estilo para o botão de remover */
-.certification-button.remove-certification {
-  background-color: #dc3545; /* Vermelho */
-}
+  .remove-phone {
+    flex: 0 0 30px;
+    height: 30px;
+    font-size: 1rem;
+    background-color: #ea4407;
+    color: #fff;
+    border-radius: 50%;
+    text-align: center;
+    padding: 0;
+  }
+  
+  .add-phone:hover {
+    background-color: #1b5d2a;
+  }
 
-.certification-button.remove-certification:hover {
-  background-color: #c82333; /* Vermelho escuro */
-}
+  .remove-phone:hover {
+    background-color: #8b190d;
+  }
+  /* Estilo de botões especiais */
+  .buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
 
+/* Modal */
 .modal {
   display: flex;
   justify-content: center;
@@ -111,14 +153,26 @@ td button.delete:hover {
 }
 
 .modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   background-color: white;
   padding: 20px;
   border-radius: 5px;
   width: 500px;
-  max-height: 80%; /* Limita a altura do modal */
-  overflow-y: auto; /* Adiciona rolagem se o conteúdo for muito grande */
+  max-height: 80%;
+  overflow-y: auto;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
+
+  /* Ajustes do canvas */
+  #signature-canvas {
+    width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+    display: block;
+    margin: auto;
+  }
 
 .hidden {
   display: none;
@@ -130,30 +184,74 @@ td button.delete:hover {
   font-size: 20px;
 }
 
-.phone-input {
-  display: flex;
-  align-items: center;
-  margin-bottom: 5px;
+  /* Responsividade */
+  @media (min-width: 768px) {
+    .form-preview-wrapper {
+      flex-direction: row;
+      gap: 40px;
+    }
+  
+    form, #preview {
+      max-width: 50%;
+    }
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    display: block;
+  }
+  
+  th, td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: #f8f8f8;
+  }
+
+  .add-certification {
+    flex: 0 0 30px; /* Tamanho fixo para o botão */
+    height: 30px;
+    font-size: 1rem;
+    background-color: #28a745;
+    color: #fff;
+    border-radius: 50%;
+    text-align: center;
+    padding: 0;
+  }
+  
+  .remove-certification {
+    flex: 0 0 30px; /* Tamanho fixo para o botão */
+    height: 30px;
+    font-size: 1rem;
+    background-color: #ea4407;
+    color: #fff;
+    border-radius: 50%;
+    text-align: center;
+    padding: 0;
+  }
+  
+
+  .add-certification {
+    flex: 0 0 30px;  /* Garantir que o botão tenha o mesmo tamanho */
+    height: 30px;
+    font-size: 1rem;
+    background-color: #28a745;
+    color: #fff;
+    border-radius: 50%;
+    text-align: center;
+    padding: 0;
+  }
+  
+.add-certification:hover {
+  background-color: #1b5d2a;
 }
 
-.phone-field {
-  flex: 1;
-  margin-right: 5px;
+.remove-certification:hover {
+  background-color: #8b190d;
 }
 
-.phone-type {
-  margin-right: 5px;
-}
-
-.remove-phone {
-  background-color: #dc3545; /* Vermelho */
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 5px;
-  cursor: pointer;
-}
-
-.remove-phone.hidden {
-  display: none;
-}
