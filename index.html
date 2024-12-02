@@ -3,60 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gerador de Assinaturas</title>
+  <title>iAssinaturas</title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <script type="module" src="script.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
   <div class="container">
-    <h1>Gerador de Assinaturas</h1>
-    <button id="add-unit-button">Cadastrar Unidades</button>  
-    
-    <form id="signature-form">
-
-      <label for="unit">Unidade:</label>
-      <select id="unit" required></select>   
-
-      <label for="name">Nome:</label>
-      <input type="text" id="name" placeholder="Nome do Colaborador" required>
-
-      <label for="sector">Setor:</label>
-      <input type="text" id="sector" placeholder="Setor do Colaborador" required>
-
-      <label for="email">E-mail:</label>
-      <input type="text" id="email" placeholder="intermaritima@intermaritima.com.br" list="email-suggestions" required>
-      <datalist id="email-suggestions">
-          <!-- As opções serão adicionadas dinamicamente -->
-      </datalist>
-      <label for="phones-container">Telefone(s) de Contato (Opcional):</label>
-      <div id="phones-container">
-        <!-- Campo de telefone inicial -->
-        <div class="phone-input">
-          <input type="text" name="phone" class="phone-field" placeholder="(00) 90000-0000">
-          <select class="phone-type">
-            <option value="fixo">Fixo</option>
-            <option value="celular" selected>Celular</option>
-          </select>
-          <button type="button" class="remove-phone hidden">-</button>
+    <h1>iAssinaturas</h1>
+    <button id="add-unit-button">
+      <i class="fas fa-building"></i> CADASTRO DE UNIDADES
+    </button>  
+    <div class="form-preview-wrapper">
+      <form id="signature-form">
+        <label for="unit">Selecione a unidade:</label>
+        <select id="unit" required></select>
+  
+        <label for="name">Colaborador:</label>
+        <input type="text" id="name" placeholder="Nome do Colaborador" required>
+  
+        <label for="sector">Setor:</label>
+        <input type="text" id="sector" placeholder="Setor do Colaborador" required>
+  
+        <label for="email">E-mail:</label>
+        <input type="text" id="email" placeholder="intermaritima@intermaritima.com.br" list="email-suggestions" required>
+        <datalist id="email-suggestions"></datalist>
+  
+        <label for="phones-container">Telefone(s) de Contato (Opcional):</label>
+        <div id="phones-container">
+          <div class="phone-input">
+            
+            <input type="text" name="phone" class="phone-field" placeholder="(71) 9 9999-9999">
+            <select class="phone-type">
+              <option value="fixo">Fixo</option>
+              <option value="celular" selected>Celular</option>
+            </select>
+            <button type="button" id="add-phone" class="add-phone">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
         </div>
-      </div>
-      <button type="button" id="add-phone">Adicionar + Telefones</button>
+  
+        <button type="submit">
+          <i class="fas fa-pencil-alt"></i> GERAR ASSINATURA
+        </button>            
+      </form>
+        <div id="preview">
+        <h2>Pré-visualização:</h2>
+        <div id="signature-preview"></div>
+        <canvas id="signature-canvas"></canvas>
 
-      <button type="submit">Gerar Assinatura</button>
-    </form>
-
-    <div id="preview">
-      <h2>Pré-visualização:</h2>
-      <div id="signature-preview"></div>
-      <canvas id="signature-canvas" style="border: 1px solid black;"></canvas>
-      <div>
-        <div>
-          <button id="download-button" style="display: none;">Baixar Assinatura</button>
-          <button id="send-email-button" style="display: none;">Enviar por E-mail</button>
-        </div>      
-      </div>     
+        <div class="buttons-container">
+          <button id="download-button" style="display:none;">
+            <i class="fas fa-download"></i> Baixar Assinatura</button>
+          <button id="send-email-button" style="display:none;">
+            <i class="fas fa-envelope"></i> Enviar por E-mail</button>
+        </div>
+      </div>  
     </div>
   </div>
 </body>
