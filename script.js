@@ -731,20 +731,18 @@ document.getElementById("signature-form").addEventListener("submit", async (even
       // Certificações
       ctx.font = "12px Arial";
       const certY = 160;
-      if (certifications.length === 1) {
-          const certWidth = ctx.measureText(certifications[0]).width;
-          ctx.fillText(certifications[0], 40 + (150 - certWidth) / 2, certY);
-      } else if (certifications.length === 2) {
-          const certText = certifications.join(" / ");
+      const maxCertsPerLine = 2; // Máximo de certificações por linha
+      const lineHeight = 15; // Altura da linha
+      
+      // Itera sobre as certificações em grupos de maxCertsPerLine
+      for (let i = 0; i < certifications.length; i += maxCertsPerLine) {
+          // Pega até maxCertsPerLine certificações
+          const lineCertifications = certifications.slice(i, i + maxCertsPerLine);
+          const certText = lineCertifications.join(" / ");
           const certWidth = ctx.measureText(certText).width;
-          ctx.fillText(certText, 40 + (150 - certWidth) / 2, certY);
-      } else if (certifications.length === 3) {
-          const firstLine = certifications.slice(0, 2).join(" / ");
-          const secondLine = certifications[2];
-          const firstLineWidth = ctx.measureText(firstLine).width;
-          const secondLineWidth = ctx.measureText(secondLine).width;
-          ctx.fillText(firstLine, 40 + (150 - firstLineWidth) / 2, certY);
-          ctx.fillText(secondLine, 40 + (150 - secondLineWidth) / 2, certY + 15);
+          
+          // Desenha a linha no canvas
+          ctx.fillText(certText, 40 + (150 - certWidth) / 2, certY + Math.floor(i / maxCertsPerLine) * lineHeight);
       }
 
       // Dados do colaborador
