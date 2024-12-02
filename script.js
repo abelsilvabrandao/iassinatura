@@ -509,140 +509,161 @@ emailInput.addEventListener("input", () => {
     }
   });
   
-
-
-document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", () => {
     const phonesContainer = document.getElementById("phones-container");
     const addPhoneButton = document.getElementById("add-phone");
-  
+
     // Função para adicionar um novo campo de telefone
     const addPhoneField = () => {
         const phoneDiv = document.createElement("div");
         phoneDiv.classList.add("phone-input");
-      
+
         phoneDiv.innerHTML = `
           <input type="text" name="phone" class="phone-field" placeholder="(00) 90000-0000">
           <select class="phone-type">
             <option value="fixo">Fixo</option>
             <option value="celular" selected>Celular</option>
           </select>
-          <button type="button" class="remove-phone">-</button>
+          <button type="button" class="remove-phone">
+            <i class="fas fa-minus"></i>
+          </button>
         `;
-      
+
         const phoneInput = phoneDiv.querySelector(".phone-field");
         const phoneType = phoneDiv.querySelector(".phone-type");
-      
+
+        // Altera o placeholder baseado no tipo de telefone
+        const updatePlaceholder = () => {
+            if (phoneType.value === "celular") {
+                phoneInput.setAttribute("placeholder", "(71) 9 9999-9999"); // Placeholder para celular
+            } else {
+                phoneInput.setAttribute("placeholder", "(71) 9999-9999"); // Placeholder para fixo
+            }
+        };
+
+        // Chama a função para definir o placeholder ao carregar
+        updatePlaceholder();
+
         // Adiciona evento de entrada para formatar o telefone
         phoneInput.addEventListener("input", () => {
           phoneInput.value = formatPhone(phoneInput.value, phoneType.value);
         });
-      
-        // Atualiza a formatação ao trocar o tipo
+
+        // Atualiza a formatação e o placeholder ao trocar o tipo
         phoneType.addEventListener("change", () => {
           phoneInput.value = formatPhone(phoneInput.value, phoneType.value);
+          updatePlaceholder(); // Atualiza o placeholder quando o tipo mudar
         });
-      
+
         const removeButton = phoneDiv.querySelector(".remove-phone");
         removeButton.addEventListener("click", () => {
           phonesContainer.removeChild(phoneDiv);
-      
+
           // Esconde o botão de remover se houver apenas um campo
           if (phonesContainer.children.length === 1) {
             const remainingRemoveButton = phonesContainer.querySelector(".remove-phone");
             remainingRemoveButton.classList.add("hidden");
           }
         });
-      
+
         phonesContainer.appendChild(phoneDiv);
-      
+
         // Mostra o botão de remover em todos os campos
         document.querySelectorAll(".remove-phone").forEach(btn => btn.classList.remove("hidden"));
-      };
-      
+    };
 
-  
     // Adiciona o evento ao botão "Adicionar Telefone"
     if (addPhoneButton) {
       addPhoneButton.addEventListener("click", addPhoneField);
     }
-  
-// Configuração do botão "Remover" no campo inicial
-const initialRemoveButton = phonesContainer.querySelector(".remove-phone");
-if (initialRemoveButton) {
-  initialRemoveButton.classList.add("hidden");
-}
 
-// Adiciona suporte à formatação dinâmica no campo inicial
-const initialPhoneField = phonesContainer.querySelector(".phone-field");
-const initialPhoneType = phonesContainer.querySelector(".phone-type");
+    // Configuração do botão "Remover" no campo inicial
+    const initialRemoveButton = phonesContainer.querySelector(".remove-phone");
+    if (initialRemoveButton) {
+      initialRemoveButton.classList.add("hidden");
+    }
 
-if (initialPhoneField && initialPhoneType) {
-  // Evento para formatar o número enquanto o usuário digita
-  initialPhoneField.addEventListener("input", () => {
-    initialPhoneField.value = formatPhone(initialPhoneField.value, initialPhoneType.value);
+    // Adiciona suporte à formatação dinâmica no campo inicial
+    const initialPhoneField = phonesContainer.querySelector(".phone-field");
+    const initialPhoneType = phonesContainer.querySelector(".phone-type");
+
+    if (initialPhoneField && initialPhoneType) {
+      // Evento para formatar o número enquanto o usuário digita
+      initialPhoneField.addEventListener("input", () => {
+        initialPhoneField.value = formatPhone(initialPhoneField.value, initialPhoneType.value);
+      });
+
+      // Evento para reformatar ao trocar o tipo entre fixo e celular
+      initialPhoneType.addEventListener("change", () => {
+        initialPhoneField.value = formatPhone(initialPhoneField.value, initialPhoneType.value);
+        updatePlaceholder(); // Atualiza o placeholder quando o tipo mudar
+      });
+
+      // Adiciona o placeholder para o campo inicial de acordo com o tipo
+      const updatePlaceholder = () => {
+        if (initialPhoneType.value === "celular") {
+          initialPhoneField.setAttribute("placeholder", "(71) 9 9999-9999");
+        } else {
+          initialPhoneField.setAttribute("placeholder", "(71) 9999-9999");
+        }
+      };
+      
+      updatePlaceholder(); // Define o placeholder inicial baseado no tipo
+    }
+});
+
+// Função para capturar e formatar os telefones
+const getFormattedPhones = () => {
+  const phoneInputs = Array.from(document.querySelectorAll(".phone-input"));
+  const phones = { fixo: [], celular: [] };
+
+  phoneInputs.forEach(input => {
+    const phone = input.querySelector(".phone-field").value.trim();
+    const type = input.querySelector(".phone-type").value;
+
+    if (phone) phones[type].push(phone);
   });
 
-  // Evento para reformatar ao trocar o tipo entre fixo e celular
-  initialPhoneType.addEventListener("change", () => {
-    initialPhoneField.value = formatPhone(initialPhoneField.value, initialPhoneType.value);
-  });
-}
-  });
-  
-  // Função para capturar e formatar os telefones
-  const getFormattedPhones = () => {
-    const phoneInputs = Array.from(document.querySelectorAll(".phone-input"));
-    const phones = { fixo: [], celular: [] };
-  
-    phoneInputs.forEach(input => {
-      const phone = input.querySelector(".phone-field").value.trim();
-      const type = input.querySelector(".phone-type").value;
-  
-      if (phone) phones[type].push(phone);
-    });
-  
-    let phoneText = "";
-    if (phones.fixo.length > 0) {
-      phoneText += `Fixo: ${phones.fixo.join(" / ")}`;
-    }
-    if (phones.celular.length > 0) {
-      if (phoneText) phoneText += " ";
-      phoneText += `Cel.: +55 ${phones.celular.join(" / ")}`;
-    }
-  
-    return phoneText;
-  };
+  let phoneText = "";
+  if (phones.fixo.length > 0) {
+    phoneText += `Fixo: ${phones.fixo.join(" / ")}`;
+  }
+  if (phones.celular.length > 0) {
+    if (phoneText) phoneText += " ";
+    phoneText += `Celular: +55 ${phones.celular.join(" / ")}`;
+  }
 
-  const formatPhone = (value, type) => {
-    // Remove todos os caracteres que não sejam números
-    value = value.replace(/\D/g, '');
-  
-    if (type === 'fixo') {
-      // Limita a 10 dígitos para números fixos
-      value = value.slice(0, 10);
-  
-      // Formata como (XX) XXXX-XXXX
-      if (value.length > 6) {
-        value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
-      } else if (value.length > 2) {
-        value = value.replace(/(\d{2})(\d{0,4})/, '($1) $2');
-      }
-    } else if (type === 'celular') {
-      // Limita a 11 dígitos para celulares
-      value = value.slice(0, 11);
-  
-      // Formata como (XX) X XXXX-XXXX
-      if (value.length > 7) {
-        value = value.replace(/(\d{2})(\d{1})(\d{4})(\d{0,4})/, '($1) $2 $3-$4');
-      } else if (value.length > 2) {
-        value = value.replace(/(\d{2})(\d{1})(\d{0,4})/, '($1) $2 $3');
-      }
-    }
-  
-    return value;
-  };
-  
+  return phoneText;
+};
 
+const formatPhone = (value, type) => {
+  // Remove todos os caracteres que não sejam números
+  value = value.replace(/\D/g, '');
+
+  if (type === 'fixo') {
+    // Limita a 10 dígitos para números fixos
+    value = value.slice(0, 10);
+
+    // Formata como (XX) XXXX-XXXX
+    if (value.length > 6) {
+      value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+    } else if (value.length > 2) {
+      value = value.replace(/(\d{2})(\d{0,4})/, '($1) $2');
+    }
+  } else if (type === 'celular') {
+    // Limita a 11 dígitos para celulares
+    value = value.slice(0, 11);
+
+    // Formata como (XX) X XXXX-XXXX
+    if (value.length > 7) {
+      value = value.replace(/(\d{2})(\d{1})(\d{4})(\d{0,4})/, '($1) $2 $3-$4');
+    } else if (value.length > 2) {
+      value = value.replace(/(\d{2})(\d{1})(\d{0,4})/, '($1) $2 $3');
+    }
+  }
+
+  return value;
+};
 // Função para gerar assinatura
 document.getElementById("signature-form").addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -652,7 +673,7 @@ document.getElementById("signature-form").addEventListener("submit", async (even
   
     // Valida o e-mail antes de continuar
     if (!isValidEmail(email)) {
-      Swal.fire("Erro", "Por favor, insira um e-mail válido de 'intermaritima.com.br' ou 'intersal.com.br'.", "error");
+      Swal.fire("Erro", "Por favor, insira um e-mail válido:<p>'intermaritima.com.br' ou 'intersal.com.br'.", "error");
       return;
     }
   
@@ -898,7 +919,12 @@ Passo a passo: (https://support.microsoft.com/pt-br/office/criar-uma-assinatura-
   window.location.href = mailtoLink;
 
   // Exibir um alerta informando que a imagem está anexada
-  Swal.fire("Atenção!", "O e-mail será aberto para envio da assinatura. Baixe o arquivo anexe e envie", "info");
+  Swal.fire(
+    "Atenção!", 
+    "Ao clicar em 'Enviar por E-mail', o seu cliente de e-mail será aberto com a assinatura já anexada. Basta revisar e enviar!", 
+    "info"
+  );
+  
 });
 
 // Mostrar o botão "Enviar por E-mail" após a geração da assinatura
