@@ -7,13 +7,13 @@
   <link rel="stylesheet" href="style.css">
   <script type="module" src="script.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  </head>
 <body>
   <div class="container">
     <h1>Cadastro de Unidades</h1>
     <button id="new-unit-button">Adicionar Nova Unidade</button>
     <button type="button" onclick="window.location.href='index.html'">Voltar</button>
-
     <h2>Unidades Cadastradas</h2>
     <table id="units-list">
       <thead>
@@ -32,7 +32,6 @@
         <!-- As unidades cadastradas serão inseridas aqui -->
       </tbody>
     </table>
-
     <!-- Modal para criação/edição de unidades -->
     <div id="unit-modal" class="modal hidden">
       <div class="modal-content">
@@ -73,10 +72,15 @@
           <input type="file" id="image" accept="image/*">
           <img id="current-image" src="" alt="Logo atual" style="display: none; width: 100px; height: auto; margin-top: 10px;">
     
-          <div id="certifications-container"></div>   
-          <button type="button" id="add-certification">Adicionar Certificação</button>
-          <button type="submit">Salvar</button>
-          <button type="button" onclick="document.getElementById('unit-modal').classList.add('hidden'); clearModal();">Cancelar</button>
+          <div id="certifications-container"></div>
+          <input type="text" class="certification" placeholder="Ex: ISO 9001:2015">
+          <button type="button" id="add-certification" class="add-certification">
+            <i class="fas fa-plus"></i>
+          </button>
+          <div class="button-group">
+            <button type="submit">Salvar</button>
+            <button type="button" onclick="document.getElementById('unit-modal').classList.add('hidden'); clearModal();">Cancelar</button>
+          </div>
         </form>
       </div>
     </div>

@@ -50,16 +50,21 @@
           <i class="fas fa-pencil-alt"></i> GERAR ASSINATURA
         </button>            
       </form>
-        <div id="preview">
+      <div id="preview">
         <h2>Pré-visualização:</h2>
-        <div id="signature-preview"></div>
-        <canvas id="signature-canvas"></canvas>
-
-        <div class="buttons-container">
-          <button id="download-button" style="display:none;">
-            <i class="fas fa-download"></i> Baixar Assinatura</button>
-          <button id="send-email-button" style="display:none;">
-            <i class="fas fa-envelope"></i> Enviar por E-mail</button>
+        <div class="signature-preview-container">
+          <div class="signature-preview-scroll">
+            <div id="signature-preview"></div>
+            <canvas id="signature-canvas" style="display: none;"></canvas>
+          </div>
+        </div>
+        <div class="signature-actions">
+          <button id="download-button" style="display: none;">
+            <i class="fas fa-download"></i> Baixar Assinatura
+          </button>
+          <button id="send-email-button" style="display: none;">
+            <i class="fas fa-envelope"></i> Enviar por E-mail
+          </button>
         </div>
       </div>  
     </div>

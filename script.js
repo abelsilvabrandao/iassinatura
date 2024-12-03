@@ -250,38 +250,71 @@ window.fetchAddress = async function() {
 
 // Função para carregar unidades na lista
 async function loadUnitsList() {
-  const unitsList = document.getElementById("units-list").getElementsByTagName("tbody")[0];
-  
-  if (!unitsList) {
-    console.warn("Elemento 'units-list' não encontrado. Certifique-se de que esta função é chamada na página correta.");
-    return; 
-  }
+  const unitsList = document.getElementById("units-list");
+  if (!unitsList) return;
 
-  unitsList.innerHTML = ""; // Limpa a tabela antes de carregar
+  const tbody = unitsList.querySelector("tbody");
+  tbody.innerHTML = ""; // Limpa a lista atual
 
   try {
-    const snapshot = await getDocs(collection(db, "units"));
-    snapshot.forEach((doc) => {
+    const querySnapshot = await getDocs(collection(db, "units"));
+    querySnapshot.forEach((doc) => {
       const unit = doc.data();
-      const row = unitsList.insertRow(); // Adiciona uma nova linha na tabela
+      const tr = document.createElement("tr");
+      
+      // Logo
+      const logoCell = document.createElement("td");
+      if (unit.image) {
+        const img = document.createElement("img");
+        img.src = unit.image;
+        img.alt = unit.name;
+        img.style.maxWidth = "80px";
+        logoCell.appendChild(img);
+      }
+      tr.appendChild(logoCell);
 
-      row.innerHTML = `
-      <td><img src="${unit.image}" alt="Imagem da unidade" style="width: 100px; height: auto;"></td>
-      <td>${unit.name}</td>
-      <td>${ unit.cnpj}</td>
-      <td>${unit.address}, ${unit.number}${unit.complement ? ', ' + unit.complement : ''}, ${unit.neighborhood}, ${unit.city} - ${unit.state}</td>
-      <td>${unit.cep}</td>
-      <td>${unit.certifications ? unit.certifications.join(', ') : 'N/A'}</td> <!-- Adicionando a coluna de certificações -->
-      <td>${unit.site ? `<a href="${unit.site}" target="_blank">${unit.site}</a>` : 'N/A'}</td> <!-- Adicionando a coluna do site -->
-      <td>
-        <button onclick="editUnit('${doc.id}', '${unit.name}', '${unit.cnpj}', '${unit.address}', '${unit.number}', '${unit.complement || ''}', '${unit.neighborhood}', '${unit.city}', '${unit.state}', '${unit.phone}', '${unit.cep}')">Editar</button>
-        <button class="delete" onclick="deleteUnit('${doc.id}')">Excluir</button>
-      </td>
-    `;
+      // Dados da unidade
+      tr.appendChild(createCell(unit.name));
+      tr.appendChild(createCell(unit.cnpj));
+      tr.appendChild(createCell(`${unit.address}, ${unit.number}${unit.complement ? `, ${unit.complement}` : ''}, ${unit.neighborhood}, ${unit.city} - ${unit.state}`));
+      tr.appendChild(createCell(unit.cep));
+      tr.appendChild(createCell(unit.certifications ? unit.certifications.join(", ") : ""));
+      tr.appendChild(createCell(unit.site));
+
+      // Botões de ação
+      const actionsCell = document.createElement("td");
+      const actionsDiv = document.createElement("div");
+      actionsDiv.className = "action-buttons";
+
+      // Botão de editar
+      const editButton = document.createElement("button");
+      editButton.className = "btn-edit";
+      editButton.innerHTML = '<i class="fas fa-edit"></i>';
+      editButton.onclick = () => editUnit(doc.id, unit.name, unit.cnpj, unit.address, unit.number, unit.complement, unit.neighborhood, unit.city, unit.state, unit.phone, unit.cep);
+
+      // Botão de excluir
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "btn-delete";
+      deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+      deleteButton.onclick = () => deleteUnit(doc.id);
+
+      actionsDiv.appendChild(editButton);
+      actionsDiv.appendChild(deleteButton);
+      actionsCell.appendChild(actionsDiv);
+      tr.appendChild(actionsCell);
+
+      tbody.appendChild(tr);
     });
   } catch (error) {
     console.error("Erro ao carregar unidades:", error);
   }
+}
+
+// Função auxiliar para criar células da tabela
+function createCell(content) {
+  const td = document.createElement("td");
+  td.textContent = content || "";
+  return td;
 }
 
 async function loadUnitsToSelect() {
@@ -475,8 +508,9 @@ window.formatCep = function(event) {
     value = value.replace(/(\d{5})(\d)/, '$1-$2');
   }
 
-  event.target.value = value;
+  event.target.value = value; // Atualiza o valor do campo de entrada
 }
+
 
 const emailInput = document.getElementById('email');
 const emailSuggestions = document.getElementById('email-suggestions');
@@ -825,14 +859,24 @@ currentX += ctx.measureText(sustainabilityTextPart2).width;
 ctx.font = "bold 12px Arial";
 ctx.fillText(sustainabilityTextBold2, currentX, 220);
 
-      // Gera a imagem com maior qualidade
+      // Gera a imagem final
       const dataURL = canvas.toDataURL("image/png");
-      document.getElementById("signature-preview").innerHTML = `<img src="${dataURL}" alt="Pré-visualização da Assinatura" style="max-width: 100%;">`;
+      
+      // Atualiza a prévia
+      document.getElementById("signature-preview").innerHTML = `<img src="${dataURL}" alt="Pré-visualização da Assinatura">`;
+      
+      // Esconde o canvas e mostra a prévia
+      document.getElementById("signature-canvas").style.display = "none";
+      document.getElementById("signature-preview").style.display = "block";
+      
+      // Mostra os botões de ação
+      document.getElementById("download-button").style.display = "flex";
+      document.getElementById("send-email-button").style.display = "flex";
 
+      // Configura o botão de download
       const downloadButton = document.getElementById("download-button");
-      downloadButton.style.display = 'block';
       downloadButton.onclick = () => {
-          downloadImage(dataURL, name, unit);
+        downloadImage(dataURL, name, unit);
       };
   };
 });
@@ -929,9 +973,7 @@ Passo a passo: (https://support.microsoft.com/pt-br/office/criar-uma-assinatura-
 document.getElementById("signature-form").addEventListener("submit", (event) => {
   event.preventDefault();
 
-  // Resto do código de geração da assinatura...
-
   // Mostrar os botões de download e enviar por e-mail
-  document.getElementById("download-button").style.display = "inline-block";
-  document.getElementById("send-email-button").style.display = "inline-block";
+  document.getElementById("download-button").classList.add("show");
+  document.getElementById("send-email-button").classList.add("show");
 });

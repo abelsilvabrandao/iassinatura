@@ -1,257 +1,865 @@
-/* Estilo Básico para Ambas as Páginas */
+/* Estilo Básico */
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
   margin: 0;
   padding: 20px;
+  min-height: 100vh;
 }
 
 .container {
-  max-width: 900px;
-  margin: auto;
+  max-width: 1200px;
+  margin: 0 auto;
   background: white;
-  padding: 20px;
-  border-radius: 5px;
+  padding: 30px;
+  border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
   text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 24px;
+}
+
+/* Layout Principal */
+.form-preview-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+/* Formulário */
+#signature-form {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.form-group {
+  margin-bottom: 20px;
 }
 
 label {
-  font-size: 0.9rem;
-  margin: 10px 0 5px;
+  display: block;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 8px;
+  font-weight: 500;
 }
 
-.form-preview-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-input, select, button {
+input, select {
   width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
 }
 
+input:focus, select:focus {
+  outline: none;
+  border-color: #28a745;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+}
+
+/* Preview */
+#preview {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-top: 30px;
+}
+
+#preview h2 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.signature-preview-container {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 25px;
+  margin: 20px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.signature-preview-scroll {
+  overflow-x: auto;
+  padding: 15px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #145912 #f0f0f0;
+}
+
+.signature-preview-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.signature-preview-scroll::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.signature-preview-scroll::-webkit-scrollbar-thumb {
+  background: #145912;
+  border-radius: 4px;
+}
+
+.signature-preview-scroll::-webkit-scrollbar-thumb:hover {
+  background: #0d400c;
+}
+
+#signature-preview {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 15px;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#signature-preview img {
+  max-width: 100%;
+  height: auto;
+}
+
+#signature-canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Botões de Ação */
+.signature-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+.signature-actions button {
+  background-color: #145912;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.signature-actions button i {
+  font-size: 16px;
+}
+
+.signature-actions button:hover {
+  background-color: #0d400c;
+  transform: translateY(-1px);
+}
+
+.signature-actions button:active {
+  transform: translateY(0);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .signature-preview-container {
+    padding: 15px;
+    margin: 15px 0;
+  }
+
+  .signature-preview-scroll {
+    padding: 10px;
+  }
+
+  .signature-actions {
+    flex-direction: column;
+    padding: 0 15px;
+  }
+
+  .signature-actions button {
+    width: 100%;
+    justify-content: center;
+    padding: 14px;
+  }
+}
+
+/* Ajuste para telas muito pequenas */
+@media (max-width: 380px) {
+  .signature-preview-container {
+    padding: 10px;
+  }
+
+  #preview h2 {
+    font-size: 1.2rem;
+  }
+
+  .signature-actions button {
+    font-size: 14px;
+  }
+}
+
+/* Botões */
 button {
   background-color: #28a745;
   color: white;
   border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 button:hover {
-  background-color: #1b5d2a;
+  background-color: #218838;
+  transform: translateY(-1px);
 }
 
-/* Tabelas */
-table {
+button i {
+  font-size: 16px;
+}
+
+/* Botão de Unidades */
+#add-unit-button {
+  display: block;
+  width: auto;
+  margin: 0 auto 30px;
+  background-color: #145912;
+  min-width: 250px;
+  font-weight: 500;
+}
+
+#add-unit-button:hover {
+  background-color: #00b377;
+}
+
+/* Container de Botões */
+.buttons-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+#download-button, #send-email-button {
+  min-width: 160px;
+}
+
+#download-button {
+  background-color: #28a745;
+}
+
+#send-email-button {
+  background-color: #007bff;
+}
+
+/* Telefones */
+.phone-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.phone-field-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.phone-field {
+  flex: 2;
+  margin-bottom: 0;
+}
+
+.phone-type {
+  width: 120px;
+  margin-bottom: 0;
+}
+
+.add-phone {
+  background-color: #28a745;
+}
+
+.remove-phone {
+  background-color: #dc3545;
+}
+
+.remove-phone:hover {
+  background-color: #c82333;
+}
+
+.add-phone, .remove-phone {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ajustes responsivos para os campos de telefone */
+@media (max-width: 768px) {
+  .phone-input {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    width: 100%;
+    flex-wrap: nowrap;
+  }
+
+  .phone-field-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    flex-wrap: nowrap;
+  }
+
+  .phone-type {
+    width: 90px;
+    min-width: 90px;
+    flex-shrink: 0;
+    margin: 0;
+  }
+
+  .phone-field {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+  }
+
+  input.phone-field {
+    margin: 0;
+    padding: 12px;
+  }
+
+  .add-phone,
+  .remove-phone {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    margin: 0;
+  }
+}
+
+@media (max-width: 375px) {
+  .phone-input {
+    gap: 5px;
+  }
+
+  .phone-field-container {
+    gap: 5px;
+  }
+
+  .phone-type {
+    width: 80px;
+    min-width: 80px;
+  }
+
+  input.phone-field {
+    padding: 10px;
+  }
+
+  .add-phone,
+  .remove-phone {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .container {
+    max-width: 95%;
+    padding: 15px;
+    margin: 10px auto;
+  }
+}
+
+@media (max-width: 992px) {
+  .form-preview-wrapper {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  #signature-form,
+  #preview {
+    width: 100%;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 0;
+    margin: 0;
+  }
+
+  .container {
+    max-width: 100%;
+    margin: 0;
+    padding: 15px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  #signature-form {
+    padding: 15px;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+    padding: 0;
+  }
+
+  input, 
+  select, 
+  .phone-type,
+  .phone-field {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 8px;
+  }
+
+  .phone-input {
+    flex-direction: column;
+    margin-bottom: 15px;
+    width: 100%;
+  }
+
+  .phone-field-container {
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .buttons-container {
+    flex-direction: column;
+    gap: 10px;
+    padding: 0;
+    margin-top: 20px;
+  }
+
+  #download-button,
+  #send-email-button,
+  #add-unit-button {
+    width: 100%;
+    padding: 14px;
+    margin: 5px 0;
+    font-size: 16px;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  .add-phone,
+  .remove-phone {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    margin: 5px 0;
+  }
+
+  /* Ajustes específicos para iOS */
+  @supports (-webkit-touch-callout: none) {
+    input, 
+    select, 
+    .phone-type,
+    .phone-field {
+      font-size: 16px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    select {
+      background-color: white;
+    }
+
+    .container {
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+}
+
+@media (max-width: 375px) {
+  .container {
+    padding: 10px;
+  }
+
+  input, 
+  select, 
+  .phone-type,
+  .phone-field {
+    padding: 10px;
+    font-size: 15px;
+  }
+
+  h1 {
+    font-size: 18px;
+    margin: 10px 0;
+  }
+}
+
+/* Utilitários */
+.hidden {
+  display: none !important;
+}
+
+/* Animações */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Estilos para a página de Unidades */
+#new-unit-button {
+  background-color: #145912;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: background-color 0.3s;
+}
+
+#new-unit-button:hover {
+  background-color: #00b377;
+}
+
+/* Tabela de Unidades */
+#units-list {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  display: block;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-th, td {
-  padding: 10px;
+#units-list th,
+#units-list td {
+  padding: 15px;
   text-align: left;
-  border: 1px solid #ddd;
+  border-bottom: 1px solid #eee;
 }
 
-th {
-  background-color: #f8f8f8;
+#units-list th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #333;
 }
 
-td button.delete {
-  background-color: #dc3545; /* Vermelho */
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+#units-list tr:hover {
+  background-color: #f5f5f5;
 }
 
-td button.delete:hover {
-  background-color: #c82333; /* Vermelho escuro */
+#units-list img {
+  max-width: 80px;
+  height: auto;
+  border-radius: 4px;
 }
 
-  /* Botões com ícones */
-  #download-button .icon,
-  #send-email-button .icon {
-    margin-right: 5px;
-  }
-
-
-  /* Estilo de telefones */
-  .phone-input {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .phone-field {
-    flex: 1;
-  }
-  
-  .phone-type {
-    flex: 0 0 85px;
-  }
-  
-  .add-phone {
-    flex: 0 0 30px;
-    height: 30px;
-    font-size: 1rem;
-    background-color: #28a745;
-    color: #fff;
-    border-radius: 50%;
-    text-align: center;
-    padding: 0;
-  }
-
-  .remove-phone {
-    flex: 0 0 30px;
-    height: 30px;
-    font-size: 1rem;
-    background-color: #ea4407;
-    color: #fff;
-    border-radius: 50%;
-    text-align: center;
-    padding: 0;
-  }
-  
-  .add-phone:hover {
-    background-color: #1b5d2a;
-  }
-
-  .remove-phone:hover {
-    background-color: #8b190d;
-  }
-  /* Estilo de botões especiais */
-  .buttons-container {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-  }
-
-/* Modal */
+/* Modal de Unidades */
 .modal {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-}
-
-.modal-content {
+  background: rgba(0,0,0,0.5);
   display: flex;
-  flex-direction: column;
-  gap: 20px;
-  background-color: white;
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 1000;
   padding: 20px;
-  border-radius: 5px;
-  width: 500px;
-  max-height: 80%;
   overflow-y: auto;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-  /* Ajustes do canvas */
-  #signature-canvas {
-    width: 100%;
-    height: auto;
-    border: 1px solid #ddd;
-    display: block;
-    margin: auto;
-  }
-
-.hidden {
+.modal.hidden {
   display: none;
 }
 
-.close-button {
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.modal-content h2 {
+  color: #333;
+  margin-bottom: 25px;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.modal-content form {
+  display: grid;
+  gap: 15px;
+}
+
+.modal-content label {
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.modal-content input[type="text"],
+.modal-content input[type="url"],
+.modal-content input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.modal-content input[type="text"]:focus,
+.modal-content input[type="url"]:focus {
+  border-color: #145912;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(20, 89, 18, 0.1);
+}
+
+/* Botões do Modal */
+.modal-content .button-group {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.modal-content button[type="submit"],
+.modal-content button[type="button"] {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
-  float: right;
-  font-size: 20px;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
-  /* Responsividade */
-  @media (min-width: 768px) {
-    .form-preview-wrapper {
-      flex-direction: row;
-      gap: 40px;
-    }
-  
-    form, #preview {
-      max-width: 50%;
-    }
-  }
+.modal-content button[type="submit"] {
+  background-color: #145912;
+  color: white;
+}
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    display: block;
-  }
-  
-  th, td {
+.modal-content button[type="submit"]:hover {
+  background-color: #0d400c;
+  transform: translateY(-1px);
+}
+
+.modal-content button[type="button"] {
+  background-color: #dc3545;
+  color: white;
+}
+
+.modal-content button[type="button"]:hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+}
+
+/* Exceção para o botão de adicionar certificação */
+.modal-content button.add-certification {
+  background-color: #145912;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.modal-content button.add-certification:hover {
+  background-color: #0d400c;
+}
+
+/* Container de Certificações */
+#certifications-container {
+  display: grid;
+  gap: 10px;
+}
+
+#certifications-container div {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.certification-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #145912;
+  color: white;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .modal {
     padding: 10px;
-    text-align: left;
-    border: 1px solid #ddd;
-  }
-  
-  th {
-    background-color: #f8f8f8;
+    align-items: flex-start;
   }
 
-  .add-certification {
-    flex: 0 0 30px; /* Tamanho fixo para o botão */
-    height: 30px;
-    font-size: 1rem;
-    background-color: #28a745;
-    color: #fff;
-    border-radius: 50%;
-    text-align: center;
-    padding: 0;
+  .modal-content {
+    padding: 20px;
+    margin: 10px auto;
+    width: 95%;
   }
-  
-  .remove-certification {
-    flex: 0 0 30px; /* Tamanho fixo para o botão */
-    height: 30px;
-    font-size: 1rem;
-    background-color: #ea4407;
-    color: #fff;
-    border-radius: 50%;
-    text-align: center;
-    padding: 0;
-  }
-  
 
-  .add-certification {
-    flex: 0 0 30px;  /* Garantir que o botão tenha o mesmo tamanho */
-    height: 30px;
-    font-size: 1rem;
-    background-color: #28a745;
-    color: #fff;
-    border-radius: 50%;
-    text-align: center;
-    padding: 0;
+  .modal-content h2 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
   }
-  
-.add-certification:hover {
-  background-color: #1b5d2a;
+
+  .modal-content form {
+    gap: 12px;
+  }
+
+  .modal-content input[type="text"],
+  .modal-content input[type="url"],
+  .modal-content input[type="file"] {
+    padding: 12px;
+    font-size: 16px; /* Melhor para mobile */
+  }
+
+  .modal-content .button-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .modal-content button[type="submit"],
+  .modal-content button[type="button"] {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+  }
+
+  #certifications-container div {
+    flex-direction: column;
+  }
+
+  #certifications-container input {
+    width: 100%;
+  }
+
+  .certification-button {
+    width: 100%;
+    margin-top: 5px;
+  }
 }
 
-.remove-certification:hover {
-  background-color: #8b190d;
+/* Ajuste para telas muito pequenas */
+@media (max-width: 380px) {
+  .modal-content {
+    padding: 15px;
+  }
+
+  .modal-content h2 {
+    font-size: 1.2rem;
+  }
 }
 
+/* Botões de Ação na Tabela */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btn-edit,
+.btn-delete {
+  width: 35px;
+  height: 35px;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-edit {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-edit:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-delete:hover {
+  background-color: #c82333;
+  transform: translateY(-2px);
+}
+
+.btn-edit i,
+.btn-delete i {
+  font-size: 16px;
+}
+
+/* Ajustes responsivos para os botões de ação */
+@media (max-width: 768px) {
+  .action-buttons {
+    gap: 8px;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    width: 40px;
+    height: 40px;
+  }
+
+  .btn-edit i,
+  .btn-delete i {
+    font-size: 18px;
+  }
+}
