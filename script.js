@@ -729,8 +729,8 @@ document.getElementById("signature-form").addEventListener("submit", async (even
 
   // Ajuste para qualidade da imagem
   const scaleFactor = 2; // Fator de escala para aumentar a resolução
-  canvas.width = 540 * scaleFactor;
-  canvas.height = 160 * scaleFactor;
+  canvas.width = 710 * scaleFactor;
+  canvas.height = 240 * scaleFactor;
 
   // Redefine o tamanho visível no navegador
   canvas.style.width = "710px";
