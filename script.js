@@ -41,6 +41,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         focusConfirm: false,
         showCancelButton: true,
         confirmButtonText: 'Entrar',
+        allowEnterKey: true,
         preConfirm: () => {
           const username = document.getElementById("username").value;
           const password = document.getElementById("password").value;
@@ -62,7 +63,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
       await signInWithEmailAndPassword(auth, username, password);
       Swal.fire("Sucesso!", "Login realizado com sucesso.", "success");
-      window.location.href = 'add-unit.html';
+      window.location.href = 'management.html';
     } catch (error) {
       Swal.fire("Erro!", "Credenciais inválidas.", "error");
     }
@@ -192,6 +193,146 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
+// Inicialização do Select2 para o campo de setor
+$(document).ready(function() {
+    $('#sector').select2({
+        placeholder: 'Digite para buscar ou cadastrar um setor',
+        allowClear: true,
+        minimumInputLength: 1,
+        language: {
+            errorLoading: function() {
+                return 'Os resultados não puderam ser carregados.';
+            },
+            inputTooShort: function() {
+                return 'Digite 1 ou mais caracteres';
+            },
+            noResults: function() {
+                return 'Nenhum resultado encontrado';
+            },
+            searching: function() {
+                return 'Buscando…';
+            }
+        },
+        tags: true,
+        ajax: {
+            transport: async function(params, success, failure) {
+                try {
+                    const querySnapshot = await getDocs(collection(db, 'sectors'));
+                    const setores = [];
+                    querySnapshot.forEach((doc) => {
+                        const setor = doc.data();
+                        if (params.data.term) {
+                            if (setor.name.toLowerCase().includes(params.data.term.toLowerCase())) {
+                                setores.push({
+                                    id: doc.id,
+                                    text: setor.name
+                                });
+                            }
+                        } else {
+                            setores.push({
+                                id: doc.id,
+                                text: setor.name
+                            });
+                        }
+                    });
+                    success({ results: setores });
+                } catch (error) {
+                    console.error("Erro ao buscar setores:", error);
+                    failure('Erro ao buscar setores');
+                }
+            }
+        },
+        createTag: function(params) {
+            return {
+                id: params.term,
+                text: params.term,
+                isNew: true
+            };
+        }
+    }).on('select2:select', async function(e) {
+        const data = e.params.data;
+        if (data.isNew) {
+            // Novo setor selecionado, pedir senha
+            const { value: password } = await Swal.fire({
+                title: 'Setor não cadastrado',
+                text: 'Digite a senha para cadastrar novo setor:',
+                input: 'password',
+                inputPlaceholder: 'Digite a senha',
+                showCancelButton: true,
+                confirmButtonText: 'Cadastrar',
+                cancelButtonText: 'Cancelar',
+                allowEnterKey: true,
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Você precisa digitar a senha!';
+                    }
+                }
+            });
+
+            if (password === 'COPEmatt001') { // Substitua pela senha correta
+                try {
+                    // Adicionar novo setor ao Firestore
+                    await addDoc(collection(db, 'sectors'), {
+                        name: data.text,
+                        description: '',
+                        createdAt: new Date().toISOString(),
+                        origem: "Criado pelo Filtro"
+                    });
+
+                    Swal.fire(
+                        'Sucesso!',
+                        'Novo setor cadastrado com sucesso!',
+                        'success'
+                    );
+                } catch (error) {
+                    console.error("Erro ao cadastrar setor:", error);
+                    Swal.fire(
+                        'Erro!',
+                        'Erro ao cadastrar novo setor.',
+                        'error'
+                    );
+                    // Limpar a seleção em caso de erro
+                    $('#sector').val(null).trigger('change');
+                }
+            } else {
+                Swal.fire(
+                    'Erro!',
+                    'Senha incorreta. Setor não cadastrado.',
+                    'error'
+                );
+                // Limpar a seleção em caso de senha incorreta
+                $('#sector').val(null).trigger('change');
+            }
+        }
+    });
+});
+
+// Event listener para o formulário de adicionar setor
+// document.getElementById('add-sector-form').addEventListener('submit', async (e) => {
+//     e.preventDefault();
+    
+//     const sectorName = document.getElementById('new-sector-name').value;
+    
+//     try {
+//         // Adicionar setor ao Firestore
+//         await addDoc(collection(db, 'sectors'), {
+//             name: sectorName,
+//             createdAt: new Date().toISOString()
+//         });
+        
+//         // Limpar o formulário
+//         document.getElementById('new-sector-name').value = '';
+        
+//         // Atualizar a lista de setores
+//         await loadSectors();
+        
+//         Swal.fire('Sucesso!', 'Setor adicionado com sucesso!', 'success');
+//     } catch (error) {
+//         console.error("Erro ao adicionar setor:", error);
+//         Swal.fire('Erro!', 'Erro ao adicionar setor.', 'error');
+//     }
+// });
+
 // Função para formatar o CNPJ
 function formatCnpj(event) {
   let value = event.target.value.replace(/\D/g, ''); // Remove caracteres não numéricos
@@ -211,7 +352,6 @@ function formatCnpj(event) {
 
   event.target.value = value; // Atualiza o valor do campo de entrada
 }
-
 
 function convertToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -320,6 +460,14 @@ function createCell(content) {
 async function loadUnitsToSelect() {
   const unitSelect = document.getElementById("unit");
   unitSelect.innerHTML = ""; 
+
+  // Adiciona a opção padrão
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "Selecione a unidade";
+  defaultOption.selected = true;
+  defaultOption.disabled = true;
+  unitSelect.appendChild(defaultOption);
 
   try {
     const snapshot = await getDocs(collection(db, "units"));
@@ -449,7 +597,7 @@ function clearModal() {
   document.getElementById("cep").value = '';
   document.getElementById("site").value = '';
   document.getElementById("image").value = ''; // Limpa o campo de arquivo
-  document.getElementById("current-image").style.display = "none"; // Esconde a imagem atual
+  document.getElementById("current-image").style.display = "none"; // Esconde a imagem
   const certificationsContainer = document.getElementById("certifications-container");
   certificationsContainer.innerHTML = ""; // Limpa as certificações
 }
@@ -596,14 +744,20 @@ emailInput.addEventListener("input", () => {
           // Esconde o botão de remover se houver apenas um campo
           if (phonesContainer.children.length === 1) {
             const remainingRemoveButton = phonesContainer.querySelector(".remove-phone");
-            remainingRemoveButton.classList.add("hidden");
+            if (remainingRemoveButton) {
+              remainingRemoveButton.classList.add("hidden");
+            }
           }
         });
 
         phonesContainer.appendChild(phoneDiv);
 
         // Mostra o botão de remover em todos os campos
-        document.querySelectorAll(".remove-phone").forEach(btn => btn.classList.remove("hidden"));
+        document.querySelectorAll(".remove-phone").forEach(btn => {
+          if (btn) {
+            btn.classList.remove("hidden");
+          }
+        });
     };
 
     // Adiciona o evento ao botão "Adicionar Telefone"
@@ -698,187 +852,126 @@ const formatPhone = (value, type) => {
 
   return value;
 };
+
 // Função para gerar assinatura
-document.getElementById("signature-form").addEventListener("submit", async (event) => {
-    event.preventDefault();
-  
-    const emailInput = document.getElementById("email");
-    const email = emailInput.value.trim();
-  
-    // Valida o e-mail antes de continuar
-    if (!isValidEmail(email)) {
-      Swal.fire("Erro", "Por favor, insira um e-mail válido:<p>'intermaritima.com.br' ou 'intersal.com.br'.", "error");
+function generateSignature(data) {
+    const signatureHtml = `
+        <table style="font-family: Arial, sans-serif; font-size: 10pt; line-height: 1.4; color: #333333; border-collapse: collapse;">
+            <tr>
+                <td style="padding: 0;">
+                    <div style="margin-bottom: 10px;">
+                        <strong style="color: #333333; font-size: 11pt;">${data.name}</strong><br>
+                        <span style="color: #666666;">${data.sector}</span><br>
+                        <a href="mailto:${data.email}" style="color: #666666; text-decoration: none;">${data.email}</a>
+                        ${data.skype ? `<br><span style="color: #666666;">Skype: ${data.skype}</span>` : ''}
+                        ${data.phones.map(phone => `<br><span style="color: #666666;">${phone.type === 'celular' ? 'Celular' : 'Fixo'}: ${phone.number}</span>`).join('')}
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <a href="${data.unit.site}" target="_blank">
+                            <img src="${data.unit.image}" alt="${data.unit.name}" style="max-width: 180px; height: auto; border: 0;">
+                        </a>
+                    </div>
+                    <div style="margin-bottom: 5px;">
+                        <a href="${data.unit.site}" style="color: #666666; text-decoration: none;" target="_blank">${data.unit.site}</a>
+                    </div>
+                    <div style="color: #666666; font-size: 9pt;">
+                        ${data.unit.address}, ${data.unit.number}${data.unit.complement ? `, ${data.unit.complement}` : ''}<br>
+                        ${data.unit.neighborhood} - ${data.unit.city} - ${data.unit.state} CEP: ${data.unit.cep}
+                    </div>
+                    <div style="margin-top: 10px; font-size: 8pt; color: #008000; font-style: italic;">
+                        Antes de imprimir, pense em seu compromisso com o Meio Ambiente e o comprometimento com os Custos.
+                    </div>
+                </td>
+            </tr>
+        </table>
+    `;
+
+    const previewDiv = document.getElementById('signature-preview');
+    previewDiv.innerHTML = signatureHtml;
+
+    // Salvar a assinatura gerada para uso posterior
+    window.generatedSignature = signatureHtml;
+}
+
+// Mostra a assinatura no canvas
+document.getElementById("signature-canvas").style.display = "block";
+document.getElementById("signature-preview").style.display = "none";
+
+document.getElementById("send-email-button").addEventListener("click", async () => {
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+
+  if (!name || !email) {
+      Swal.fire("Erro", "Certifique-se de preencher o nome e o e-mail.", "error");
       return;
-    }
-  
-    // Captura os outros dados do formulário
-    const unit = document.getElementById("unit").value;
-    const name = document.getElementById("name").value;
-    const sector = document.getElementById("sector").value;
-    const phoneText = getFormattedPhones(); // Telefones formatados
+  }
 
-  // Captura os dados da unidade
-  const unitData = await getUnitData(unit);
-  const { image, site: rawSite, certifications, address, number, city, cep, state, complement, neighborhood } = unitData;
+  // Obter a imagem da prévia
+  const previewImg = document.querySelector("#signature-preview img");
+  if (!previewImg) {
+      Swal.fire("Erro", "Por favor, gere a assinatura primeiro.", "error");
+      return;
+  }
 
-  const site = rawSite ? rawSite.replace(/^https?:\/\//, '') : '';
-  const logo = image || 'path/to/default/logo.png';
+  // Corpo do e-mail com instruções mais detalhadas
+  const emailBody = `
+Caro colaborador ${name},
 
-  const canvas = document.getElementById("signature-canvas");
-  const ctx = canvas.getContext("2d");
+Segue em anexo sua assinatura de e-mail. Por favor, siga as instruções abaixo para adicioná-la:
 
-  // Ajuste para qualidade da imagem
-  const scaleFactor = 2; // Fator de escala para aumentar a resolução
-  canvas.width = 710 * scaleFactor;
-  canvas.height = 240 * scaleFactor;
+Passos para adicionar/alterar a assinatura via webmail:
 
-  // Redefine o tamanho visível no navegador
-  canvas.style.width = "710px";
-  canvas.style.height = "240px";
+1. Salve a imagem da assinatura que está em anexo
+2. No Outlook Web, clique em Configurações (ícone de engrenagem)
+3. Procure por "Exibir todas as configurações do Outlook"
+4. Vá em Email > Compose and Reply
+5. Em "Email signature", clique em "New signature"
+6. Clique no ícone de imagem
+7. Selecione a imagem da assinatura que você salvou
+8. Ajuste o tamanho se necessário
+9. Clique em "Save"
 
-  // Aplica a escala no contexto do canvas
-  ctx.scale(scaleFactor, scaleFactor);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+Em caso de dúvidas, entre em contato com:
 
-  const logoImage = new Image();
-  logoImage.src = logo;
+Dionatam Carniel
+Celular: (71) 99601-8476
+E-mail: dionatam.carniel@intermaritima.com.br
 
-  logoImage.onload = () => {
-      ctx.drawImage(logoImage, 40, 40, 150, 75);
+Alexandre Gadelha
+Celular: (71) 99701-2076
+E-mail: alexandre.gadelha@intermaritima.com.br
 
-      //Linha separadora
-      ctx.setLineDash([5, 5]);
-      ctx.beginPath();
-      ctx.moveTo(250, 20);
-      ctx.lineTo(250, 190);
-      ctx.strokeStyle = "gray";
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.setLineDash([]);
+Tutorial completo: https://support.microsoft.com/pt-br/office/criar-uma-assinatura-de-e-mail-a-partir-de-um-modelo-5b02c5ed-1e85-4d2a-a098-9628fe3231d8
+`;
 
-      // Centralizar site no primeiro quadrante
-      ctx.font = "bold 14px Arial";
-      ctx.fillStyle = 'gray';
-      const siteWidth = ctx.measureText(site).width;
-      ctx.fillText(site, 40 + (150 - siteWidth) / 2, 140);
-
-      // Certificações
-      ctx.font = "12px Arial";
-      const certY = 160;
-      const maxCertsPerLine = 2; // Máximo de certificações por linha
-      const lineHeight = 15; // Altura da linha
+  try {
+      // Criar o link mailto
+      const mailtoLink = `mailto:${email}?subject=Sua Nova Assinatura de E-mail&body=${encodeURIComponent(emailBody)}`;
       
-      // Itera sobre as certificações em grupos de maxCertsPerLine
-      for (let i = 0; i < certifications.length; i += maxCertsPerLine) {
-          // Pega até maxCertsPerLine certificações
-          const lineCertifications = certifications.slice(i, i + maxCertsPerLine);
-          const certText = lineCertifications.join(" / ");
-          const certWidth = ctx.measureText(certText).width;
-          
-          // Desenha a linha no canvas
-          ctx.fillText(certText, 40 + (150 - certWidth) / 2, certY + Math.floor(i / maxCertsPerLine) * lineHeight);
-      }
+      // Abrir o cliente de e-mail
+      window.location.href = mailtoLink;
 
-      // Dados do colaborador
-      ctx.font = "bold 14px Arial";
-      ctx.fillText(name, 270, 40);
-      ctx.font = "14px Arial";
-      ctx.fillText(sector, 270, 60);
-      ctx.fillText(email, 270, 80);
-      ctx.font = "bold 12px Arial";
-      if (phoneText) ctx.fillText(phoneText, 270, 170);
-
-        // Outros detalhes (endereço, etc.)
-      const formattedAddress = `${address}, ${number}${complement ? ' ' + complement : ''}${neighborhood ? ', ' + neighborhood : ''}`;
-      const addressText = `${formattedAddress} ${city} - ${state} CEP: ${cep}`;
-      const lineWidth = ctx.measureText(addressText).width;
-      const maxLineWidth = canvas.width / scaleFactor - 245 - 40; // Limita a largura
-      const actualLineWidth = Math.min(lineWidth, maxLineWidth);
-      // Linha horizontal adaptável ao endereço completo
-      ctx.setLineDash([5, 5]);
-      ctx.beginPath();
-      ctx.moveTo(270, 105);
-      ctx.lineTo(270 + actualLineWidth, 105);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      // Endereço com quebra de linha
-      ctx.font = "12px Arial";
-      const addressLines = [formattedAddress, `${city} - ${state} CEP: ${cep}`];
-      let addrY = 135;
-
-      addressLines.forEach(line => {
-          const words = line.split(' ');
-          let currentLine = "";
-          words.forEach(word => {
-              const testLine = currentLine + word + " ";
-              const testWidth = ctx.measureText(testLine).width;
-              if (testWidth > 450) {
-                  ctx.fillText(currentLine, 270, addrY);
-                  currentLine = word + " ";
-                  addrY += 15;
-              } else {
-                  currentLine = testLine;
-              }
-          });
-          ctx.fillText(currentLine, 270, addrY);
-          addrY += 15;
+      // Mostrar instruções adicionais
+      Swal.fire({
+          title: "Próximos Passos",
+          html: `
+              <div style="text-align: left;">
+                  <p><strong>1.</strong> Primeiro, clique no botão "Download" para salvar sua assinatura</p>
+                  <p><strong>2.</strong> No seu e-mail que foi aberto:</p>
+                  <ul>
+                      <li>Anexe o arquivo da assinatura que você baixou</li>
+                      <li>Revise o conteúdo do e-mail</li>
+                      <li>Envie o e-mail</li>
+                  </ul>
+              </div>
+          `,
+          icon: "info",
+          confirmButtonText: "Entendi"
       });
-
-// Texto de sustentabilidade centralizado com "Meio Ambiente" e "Custos" em negrito
-ctx.fillStyle = "#28a745"; // Nova tonalidade de verde
-ctx.font = "12px Arial";
-
-// Texto completo dividido em partes
-const sustainabilityTextPart1 = "Antes de imprimir, pense em seu compromisso com o ";
-const sustainabilityTextBold1 = "Meio Ambiente";
-const sustainabilityTextPart2 = " e o comprometimento com os ";
-const sustainabilityTextBold2 = "Custos.";
-
-// Calcula a posição inicial para centralizar
-const fullText = sustainabilityTextPart1 + sustainabilityTextBold1 + sustainabilityTextPart2 + sustainabilityTextBold2;
-const fullTextWidth = ctx.measureText(fullText).width;
-const startX = (canvas.width / scaleFactor - fullTextWidth) / 2;
-let currentX = startX;
-
-// Renderiza a primeira parte do texto
-ctx.fillText(sustainabilityTextPart1, currentX, 220);
-currentX += ctx.measureText(sustainabilityTextPart1).width;
-
-// Renderiza "Meio Ambiente" em negrito
-ctx.font = "bold 12px Arial";
-ctx.fillText(sustainabilityTextBold1, currentX, 220);
-currentX += ctx.measureText(sustainabilityTextBold1).width;
-
-// Volta ao estilo normal para a próxima parte
-ctx.font = "12px Arial";
-ctx.fillText(sustainabilityTextPart2, currentX, 220);
-currentX += ctx.measureText(sustainabilityTextPart2).width;
-
-// Renderiza "Custos" em negrito
-ctx.font = "bold 12px Arial";
-ctx.fillText(sustainabilityTextBold2, currentX, 220);
-
-      // Gera a imagem final
-      const dataURL = canvas.toDataURL("image/png");
-      
-      // Atualiza a prévia
-      document.getElementById("signature-preview").innerHTML = `<img src="${dataURL}" alt="Pré-visualização da Assinatura">`;
-      
-      // Esconde o canvas e mostra a prévia
-      document.getElementById("signature-canvas").style.display = "none";
-      document.getElementById("signature-preview").style.display = "block";
-      
-      // Mostra os botões de ação
-      document.getElementById("download-button").style.display = "flex";
-      document.getElementById("send-email-button").style.display = "flex";
-
-      // Configura o botão de download
-      const downloadButton = document.getElementById("download-button");
-      downloadButton.onclick = () => {
-        downloadImage(dataURL, name, unit);
-      };
-  };
+  } catch (error) {
+      console.error("Erro ao enviar e-mail:", error);
+      Swal.fire("Erro", "Houve um erro ao tentar abrir seu cliente de e-mail.", "error");
+  }
 });
 
 // Função para baixar a imagem
@@ -915,65 +1008,225 @@ async function getUnitData(unitId) {
       return {}; // Retorna um objeto vazio em caso de erro
   }
 }
-// Mostra a assinatura no canvas
-document.getElementById("signature-canvas").style.display = "block";
-document.getElementById("signature-preview").style.display = "none";
 
-document.getElementById("send-email-button").addEventListener("click", async () => {
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-
-  if (!name || !email) {
-      Swal.fire("Erro", "Certifique-se de preencher o nome e o e-mail.", "error");
-      return;
-  }
-
-  // Obter o canvas onde a assinatura foi desenhada
-  const canvas = document.getElementById("signature-canvas");
-  const imageURL = canvas.toDataURL("image/png"); // Gerar a URL da imagem
-
-  // Criar um link de anexo da imagem no corpo do e-mail
-  const attachment = encodeURIComponent(imageURL);
-
-  // Corpo do e-mail
-  const emailBody = `
-Caro colaborador ${name},
-
-Segue em anexo, sua assinatura e abaixo instruções para adicioná-la no e-mail.
-
-Passos para adiciona/alterar a assinatura via webmail:
-
-1. Clique em **Opções > Redigir > Editar Assinaturas**.
-2. Clique no ícone de imagem. 
-3. Busque onde você salvou a imagem e selecione-a para uso.
-
-Qualquer dúvida entrar em contato: 
-- (071) 99601-8476 (Dionatam)
-- (071) 99701-2076 (Alexandre)
-
-Passo a passo: (https://support.microsoft.com/pt-br/office/criar-uma-assinatura-de-e-mail-a-partir-de-um-modelo-5b02c5ed-1e85-4d2a-a098-9628fe3231d8?ui=pt-br&rs=pt-br&ad=br)
-  `;
-
-  // Criar o link mailto com o corpo e anexo
-  const mailtoLink = `mailto:${email}?subject=Assinatura de E-mail&body=${encodeURIComponent(emailBody)}`;
-
-  // Abrir o cliente de e-mail com o link
-  window.location.href = mailtoLink;
-
-  // Exibir um alerta informando que a imagem está anexada
-  Swal.fire(
-    "Atenção!", 
-    "Ao clicar em 'Enviar por E-mail', o seu cliente de e-mail será aberto com a assinatura já anexada. Basta revisar e enviar!", 
-    "info"
-  );
+// Event listener para o formulário de assinatura
+document.getElementById("signature-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
   
-});
+    const emailInput = document.getElementById("email");
+    const email = emailInput.value.trim();
+  
+    // Valida o e-mail antes de continuar
+    if (!isValidEmail(email)) {
+      Swal.fire("Erro", "Por favor, insira um e-mail válido:<p>'intermaritima.com.br' ou 'intersal.com.br'.", "error");
+      return;
+    }
+  
+    // Captura os outros dados do formulário
+    const unit = document.getElementById("unit").value;
+    const name = document.getElementById("name").value;
+    
+    // Obter o nome do setor do Select2
+    const sectorSelect = $('#sector');
+    const sector = sectorSelect.select2('data')[0].text;
+    
+    const phoneText = getFormattedPhones(); // Telefones formatados
+    const skype = document.getElementById("skype").value.trim(); // Captura o valor do Skype
 
-// Mostrar o botão "Enviar por E-mail" após a geração da assinatura
-document.getElementById("signature-form").addEventListener("submit", (event) => {
-  event.preventDefault();
+    // Captura os dados da unidade
+    const unitData = await getUnitData(unit);
+    if (!unitData) {
+        Swal.fire("Erro", "Dados da unidade não encontrados.", "error");
+        return;
+    }
 
-  // Mostrar os botões de download e enviar por e-mail
-  document.getElementById("download-button").classList.add("show");
-  document.getElementById("send-email-button").classList.add("show");
+    const { image, site: rawSite, certifications, address, number, city, cep, state, complement, neighborhood } = unitData;
+
+    const site = rawSite ? rawSite.replace(/^https?:\/\//, '') : '';
+    const logo = image || 'path/to/default/logo.png';
+
+    const canvas = document.getElementById("signature-canvas");
+    const ctx = canvas.getContext("2d");
+
+    // Ajuste para qualidade da imagem
+    const scaleFactor = 2; // Fator de escala para aumentar a resolução
+    canvas.width = 710 * scaleFactor;
+    canvas.height = 240 * scaleFactor;
+
+    // Redefine o tamanho visível no navegador
+    canvas.style.width = "710px";
+    canvas.style.height = "240px";
+
+    // Aplica a escala no contexto do canvas
+    ctx.scale(scaleFactor, scaleFactor);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const logoImage = new Image();
+    logoImage.src = logo;
+
+    logoImage.onload = () => {
+        ctx.drawImage(logoImage, 40, 40, 150, 75);
+
+        //Linha separadora
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(250, 20);
+        ctx.lineTo(250, 190);
+        ctx.strokeStyle = "gray";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Centralizar site no primeiro quadrante
+        ctx.font = "bold 14px Arial";
+        ctx.fillStyle = 'gray';
+        const siteWidth = ctx.measureText(site).width;
+        ctx.fillText(site, 40 + (150 - siteWidth) / 2, 140);
+
+        // Certificações
+        if (certifications && certifications.length > 0) {
+            ctx.font = "12px Arial";
+            const certY = 160;
+            const maxCertsPerLine = 2; // Máximo de certificações por linha
+            const lineHeight = 15; // Altura da linha
+            
+            // Itera sobre as certificações em grupos de maxCertsPerLine
+            for (let i = 0; i < certifications.length; i += maxCertsPerLine) {
+                // Pega até maxCertsPerLine certificações
+                const lineCertifications = certifications.slice(i, i + maxCertsPerLine);
+                const certText = lineCertifications.join(" / ");
+                const certWidth = ctx.measureText(certText).width;
+                
+                // Desenha a linha no canvas
+                ctx.fillText(certText, 40 + (150 - certWidth) / 2, certY + Math.floor(i / maxCertsPerLine) * lineHeight);
+            }
+        }
+
+        // Dados do colaborador
+        ctx.font = "bold 14px Arial";
+        ctx.fillText(name, 270, 40);
+        ctx.font = "14px Arial";
+        ctx.fillText(sector, 270, 60);
+        ctx.fillText(email, 270, 80);
+        ctx.font = "bold 12px Arial";
+        if (phoneText) ctx.fillText(phoneText, 270, 170);
+
+        // Adiciona o Skype apenas se houver um valor
+        if (skype) {
+            const skypeIcon = new Image();
+            skypeIcon.src = "skype.png";
+            
+            // Adiciona handler de erro para debug
+            skypeIcon.onerror = () => {
+                console.error("Failed to load Skype icon");
+            };
+            
+            // Move a renderização do Skype para o fluxo principal
+            skypeIcon.onload = () => {
+                // Ajusta o posicionamento do ícone e do texto do Skype para ficar mais próximo do telefone
+                // Move o ícone mais para baixo
+                ctx.drawImage(skypeIcon, 270, 150, 74, 74);
+                ctx.font = "14px Arial";
+                ctx.fillText(skype, 350, 188); // Ajustado o y do texto junto com o ícone
+                
+                // Completa a renderização após adicionar o Skype
+                finishRendering();
+            };
+        } else {
+            // Se não houver Skype, continua com a renderização
+            finishRendering();
+        }
+
+        // Move o resto da renderização para uma função separada
+        function finishRendering() {
+            ctx.font = "bold 12px Arial";
+            if (phoneText) ctx.fillText(phoneText, 270, 170);
+
+            // Outros detalhes (endereço, etc.)
+            const formattedAddress = `${address}, ${number}${complement ? ' ' + complement : ''}${neighborhood ? ', ' + neighborhood : ''}`;
+            const addressText = `${formattedAddress} ${city} - ${state} CEP: ${cep}`;
+            const lineWidth = ctx.measureText(addressText).width;
+            const maxLineWidth = canvas.width / scaleFactor - 245 - 40; // Limita a largura
+            const actualLineWidth = Math.min(lineWidth, maxLineWidth);
+
+            // Linha horizontal adaptável ao endereço completo
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(270, 105);
+            ctx.lineTo(270 + actualLineWidth, 105);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Endereço com quebra de linha
+            ctx.font = "12px Arial";
+            const addressLines = [formattedAddress, `${city} - ${state} CEP: ${cep}`];
+            let addrY = 135;
+
+            addressLines.forEach(line => {
+                const words = line.split(' ');
+                let currentLine = "";
+                words.forEach(word => {
+                    const testLine = currentLine + word + " ";
+                    const testWidth = ctx.measureText(testLine).width;
+                    if (testWidth > 450) {
+                        ctx.fillText(currentLine, 270, addrY);
+                        currentLine = word + " ";
+                        addrY += 15;
+                    } else {
+                        currentLine = testLine;
+                    }
+                });
+                ctx.fillText(currentLine, 270, addrY);
+                addrY += 15;
+            });
+
+            // Texto de sustentabilidade
+            ctx.fillStyle = "#28a745";
+            ctx.font = "12px Arial";
+
+            const sustainabilityTextPart1 = "Antes de imprimir, pense em seu compromisso com o ";
+            const sustainabilityTextBold1 = "Meio Ambiente";
+            const sustainabilityTextPart2 = " e o comprometimento com os ";
+            const sustainabilityTextBold2 = "Custos.";
+
+            const fullText = sustainabilityTextPart1 + sustainabilityTextBold1 + sustainabilityTextPart2 + sustainabilityTextBold2;
+            const fullTextWidth = ctx.measureText(fullText).width;
+            const startX = (canvas.width / scaleFactor - fullTextWidth) / 2;
+            let currentX = startX;
+
+            ctx.fillText(sustainabilityTextPart1, currentX, 220);
+            currentX += ctx.measureText(sustainabilityTextPart1).width;
+
+            ctx.font = "bold 12px Arial";
+            ctx.fillText(sustainabilityTextBold1, currentX, 220);
+            currentX += ctx.measureText(sustainabilityTextBold1).width;
+
+            ctx.font = "12px Arial";
+            ctx.fillText(sustainabilityTextPart2, currentX, 220);
+            currentX += ctx.measureText(sustainabilityTextPart2).width;
+
+            ctx.font = "bold 12px Arial";
+            ctx.fillText(sustainabilityTextBold2, currentX, 220);
+
+            // Gera a imagem final
+            const dataURL = canvas.toDataURL("image/png");
+            
+            // Atualiza a prévia
+            document.getElementById("signature-preview").innerHTML = `<img src="${dataURL}" alt="Pré-visualização da Assinatura">`;
+            
+            // Esconde o canvas e mostra a prévia
+            document.getElementById("signature-canvas").style.display = "none";
+            document.getElementById("signature-preview").style.display = "block";
+            
+            // Mostra os botões de ação
+            document.getElementById("download-button").style.display = "flex";
+            document.getElementById("send-email-button").style.display = "flex";
+
+            // Configura o botão de download
+            const downloadButton = document.getElementById("download-button");
+            downloadButton.onclick = () => {
+                downloadImage(dataURL, name, unit);
+            };
+        }
+    };
 });

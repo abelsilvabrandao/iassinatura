@@ -888,3 +888,106 @@ button i {
   display: block; /* exibe a logo como um bloco */
   margin: 0 auto; /* alinha a logo ao centro */
 }
+
+/* Estilos para o gerenciamento de setores */
+.management-sections {
+  margin: 20px 0;
+}
+
+.section {
+  margin-bottom: 30px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 20px;
+}
+
+.section h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+#sectors-list, #units-list {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+#sectors-list th,
+#sectors-list td,
+#units-list th,
+#units-list td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+#sectors-list th,
+#units-list th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.sector-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.sector-actions button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sector-actions .edit-btn {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.sector-actions .delete-btn {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.sector-actions button:hover {
+  opacity: 0.9;
+}
+
+/* Estilos para o dropdown pesquisável */
+.custom-select {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdown-item.selected {
+  background-color: #e3f2fd;
+}
