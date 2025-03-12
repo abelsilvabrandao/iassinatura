@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gerador de Assinaturas - Intermarítima</title>
+  <title>iAssinaturas - Intermarítima</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -17,10 +17,17 @@
       width: 100% !important;
     }
     .select2-selection {
-      height: 38px !important;
+      height: auto !important;
+      min-height: 38px !important;
       padding: 5px !important;
       border: 1px solid #ddd !important;
       border-radius: 4px !important;
+    }
+    .select2-selection__rendered {
+      white-space: pre-line !important;
+    }
+    .select2-results__option {
+      white-space: pre-line !important;
     }
     .select2-selection__arrow {
       height: 36px !important;
@@ -42,7 +49,7 @@
         <label for="name">Colaborador:</label>
         <input type="text" id="name" placeholder="Nome do Colaborador" required>
 
-        <label for="sector">Setor:</label>
+        <label for="sector">Setor: <small style="color: #666;">(Use * para indicar onde deseja quebrar a linha)</small></label>
         <select id="sector" class="form-select" required>
           <option value="">Carregando setores...</option>
         </select>

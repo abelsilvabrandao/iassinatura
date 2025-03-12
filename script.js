@@ -219,19 +219,27 @@ $(document).ready(function() {
                 try {
                     const querySnapshot = await getDocs(collection(db, 'sectors'));
                     const setores = [];
+
                     querySnapshot.forEach((doc) => {
                         const setor = doc.data();
+                        let formattedSectorName = setor.name;
+
+                        // Se contém asterisco, usa ele como ponto de quebra
+                        if (setor.name.includes('*')) {
+                            formattedSectorName = setor.name.replace('*', '\n').trim();
+                        }
+
                         if (params.data.term) {
                             if (setor.name.toLowerCase().includes(params.data.term.toLowerCase())) {
                                 setores.push({
                                     id: doc.id,
-                                    text: setor.name
+                                    text: formattedSectorName
                                 });
                             }
                         } else {
                             setores.push({
                                 id: doc.id,
-                                text: setor.name
+                                text: formattedSectorName
                             });
                         }
                     });
@@ -243,9 +251,16 @@ $(document).ready(function() {
             }
         },
         createTag: function(params) {
+            let formattedText = params.term;
+
+            // Se contém asterisco, usa ele como ponto de quebra
+            if (params.term.includes('*')) {
+                formattedText = params.term.replace('*', '\n').trim();
+            }
+
             return {
                 id: params.term,
-                text: params.term,
+                text: formattedText,
                 isNew: true
             };
         }
@@ -861,8 +876,8 @@ function generateSignature(data) {
                 <td style="padding: 0;">
                     <div style="margin-bottom: 10px;">
                         <strong style="color: #333333; font-size: 11pt;">${data.name}</strong><br>
-                        <span style="color: #666666;">${data.sector}</span><br>
-                        <a href="mailto:${data.email}" style="color: #666666; text-decoration: none;">${data.email}</a>
+                        <span style="color: #666666; white-space: pre-line; display: block; margin-bottom: 5px;">${data.sector}</span>
+                        <a href="mailto:${data.email}" style="color: #666666; text-decoration: none; display: block;">${data.email}</a>
                         ${data.skype ? `<br><span style="color: #666666;">Skype: ${data.skype}</span>` : ''}
                         ${data.phones.map(phone => `<br><span style="color: #666666;">${phone.type === 'celular' ? 'Celular' : 'Fixo'}: ${phone.number}</span>`).join('')}
                     </div>
@@ -875,8 +890,8 @@ function generateSignature(data) {
                         <a href="${data.unit.site}" style="color: #666666; text-decoration: none;" target="_blank">${data.unit.site}</a>
                     </div>
                     <div style="color: #666666; font-size: 9pt;">
-                        ${data.unit.address}, ${data.unit.number}${data.unit.complement ? `, ${data.unit.complement}` : ''}<br>
-                        ${data.unit.neighborhood} - ${data.unit.city} - ${data.unit.state} CEP: ${data.unit.cep}
+                        ${data.unit.address}, ${data.unit.number}${data.unit.complement ? `, ${data.unit.complement}` : ''}${data.unit.neighborhood ? ', ' + data.unit.neighborhood : ''}<br>
+                        ${data.unit.city} - ${data.unit.state} CEP: ${data.unit.cep}
                     </div>
                     <div style="margin-top: 10px; font-size: 8pt; color: #008000; font-style: italic;">
                         Antes de imprimir, pense em seu compromisso com o Meio Ambiente e o comprometimento com os Custos.
@@ -1029,6 +1044,7 @@ document.getElementById("signature-form").addEventListener("submit", async (even
     // Obter o nome do setor do Select2
     const sectorSelect = $('#sector');
     const sector = sectorSelect.select2('data')[0].text;
+    console.log('Setor selecionado:', sector); // Debug log
     
     const phoneText = getFormattedPhones(); // Telefones formatados
     const skype = document.getElementById("skype").value.trim(); // Captura o valor do Skype
@@ -1104,129 +1120,165 @@ document.getElementById("signature-form").addEventListener("submit", async (even
 
         // Dados do colaborador
         ctx.font = "bold 14px Arial";
-        ctx.fillText(name, 270, 40);
+        const cleanSector = sector.replace('*', '\n');
+        const sectorLines = cleanSector.split('\n');
+        
+        // Formata o endereço uma vez só
+        const formattedAddress = `${address}, ${number}${complement ? ' ' + complement : ''}${neighborhood ? ', ' + neighborhood : ''}`;
+        
+        // Ajusta a posição do nome quando o setor tem duas linhas
+        const nameY = sectorLines.length > 1 ? 30 : 40;
+        ctx.fillText(name, 270, nameY);
+        
+        // Quebra o setor em duas linhas se houver asterisco
         ctx.font = "14px Arial";
-        ctx.fillText(sector, 270, 60);
-        ctx.fillText(email, 270, 80);
-        ctx.font = "bold 12px Arial";
-        if (phoneText) ctx.fillText(phoneText, 270, 170);
-
-        // Adiciona o Skype apenas se houver um valor
-        if (skype) {
-            const skypeIcon = new Image();
-            skypeIcon.src = "skype.png";
+        if (sectorLines.length > 1) {
+            // Posições para duas linhas
+            ctx.fillText(sectorLines[0].trim(), 270, 50);
+            ctx.fillText(sectorLines[1].trim(), 270, 70);
+            ctx.fillText(email, 270, 90);
             
-            // Adiciona handler de erro para debug
-            skypeIcon.onerror = () => {
-                console.error("Failed to load Skype icon");
-            };
-            
-            // Move a renderização do Skype para o fluxo principal
-            skypeIcon.onload = () => {
-                // Ajusta o posicionamento do ícone e do texto do Skype para ficar mais próximo do telefone
-                // Move o ícone mais para baixo
-                ctx.drawImage(skypeIcon, 270, 150, 74, 74);
-                ctx.font = "14px Arial";
-                ctx.fillText(skype, 350, 188); // Ajustado o y do texto junto com o ícone
-                
-                // Completa a renderização após adicionar o Skype
-                finishRendering();
-            };
-        } else {
-            // Se não houver Skype, continua com a renderização
-            finishRendering();
-        }
-
-        // Move o resto da renderização para uma função separada
-        function finishRendering() {
-            ctx.font = "bold 12px Arial";
-            if (phoneText) ctx.fillText(phoneText, 270, 170);
-
-            // Outros detalhes (endereço, etc.)
-            const formattedAddress = `${address}, ${number}${complement ? ' ' + complement : ''}${neighborhood ? ', ' + neighborhood : ''}`;
-            const addressText = `${formattedAddress} ${city} - ${state} CEP: ${cep}`;
-            const lineWidth = ctx.measureText(addressText).width;
-            const maxLineWidth = canvas.width / scaleFactor - 245 - 40; // Limita a largura
-            const actualLineWidth = Math.min(lineWidth, maxLineWidth);
-
-            // Linha horizontal adaptável ao endereço completo
+            // Linha tracejada
             ctx.setLineDash([5, 5]);
             ctx.beginPath();
             ctx.moveTo(270, 105);
-            ctx.lineTo(270 + actualLineWidth, 105);
+            ctx.lineTo(720, 105);
             ctx.stroke();
             ctx.setLineDash([]);
-
-            // Endereço com quebra de linha
+            
+            // Endereço logo após a linha
             ctx.font = "12px Arial";
             const addressLines = [formattedAddress, `${city} - ${state} CEP: ${cep}`];
-            let addrY = 135;
-
+            let addrY = 125;
+            
             addressLines.forEach(line => {
-                const words = line.split(' ');
-                let currentLine = "";
-                words.forEach(word => {
-                    const testLine = currentLine + word + " ";
-                    const testWidth = ctx.measureText(testLine).width;
-                    if (testWidth > 450) {
-                        ctx.fillText(currentLine, 270, addrY);
-                        currentLine = word + " ";
-                        addrY += 15;
-                    } else {
-                        currentLine = testLine;
-                    }
-                });
-                ctx.fillText(currentLine, 270, addrY);
-                addrY += 15;
+                ctx.fillText(line, 270, addrY);
+                addrY += 20;
             });
+            
+            // Posições dos elementos inferiores para duas linhas
+            if (phoneText) {
+                ctx.font = "bold 12px Arial";
+                ctx.fillText(phoneText, 270, 165);
+            }
+            
+            if (skype) {
+                const skypeIcon = new Image();
+                skypeIcon.src = "skype.png";
+                
+                skypeIcon.onerror = () => {
+                    console.error("Failed to load Skype icon");
+                };
+                
+                skypeIcon.onload = () => {
+                    ctx.drawImage(skypeIcon, 270, 150, 74, 74);
+                    ctx.font = "14px Arial";
+                    ctx.fillText(skype, 350, 188);
+                    finalizarAssinatura();
+                };
+            } else {
+                finalizarAssinatura();
+            }
+        } else {
+            // Posições para uma linha
+            ctx.fillText(sector, 270, 60);
+            ctx.fillText(email, 270, 80);
+            
+            // Linha tracejada
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(270, 95);
+            ctx.lineTo(720, 95);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Endereço logo após a linha
+            ctx.font = "12px Arial";
+            const addressLines = [formattedAddress, `${city} - ${state} CEP: ${cep}`];
+            let addrY = 115;
+            
+            addressLines.forEach(line => {
+                ctx.fillText(line, 270, addrY);
+                addrY += 20;
+            });
+            
+            // Posições dos elementos inferiores para uma linha
+            if (phoneText) {
+                ctx.font = "bold 12px Arial";
+                ctx.fillText(phoneText, 270, 165);
+            }
+            
+            if (skype) {
+                const skypeIcon = new Image();
+                skypeIcon.src = "skype.png";
+                
+                skypeIcon.onerror = () => {
+                    console.error("Failed to load Skype icon");
+                };
+                
+                skypeIcon.onload = () => {
+                    ctx.drawImage(skypeIcon, 270, 150, 74, 74);
+                    ctx.font = "14px Arial";
+                    ctx.fillText(skype, 350, 188);
+                    finalizarAssinatura();
+                };
+            } else {
+                finalizarAssinatura();
+            }
+        }
 
+        function finalizarAssinatura() {
             // Texto de sustentabilidade
             ctx.fillStyle = "#28a745";
             ctx.font = "12px Arial";
-
-            const sustainabilityTextPart1 = "Antes de imprimir, pense em seu compromisso com o ";
-            const sustainabilityTextBold1 = "Meio Ambiente";
-            const sustainabilityTextPart2 = " e o comprometimento com os ";
-            const sustainabilityTextBold2 = "Custos.";
-
-            const fullText = sustainabilityTextPart1 + sustainabilityTextBold1 + sustainabilityTextPart2 + sustainabilityTextBold2;
-            const fullTextWidth = ctx.measureText(fullText).width;
-            const startX = (canvas.width / scaleFactor - fullTextWidth) / 2;
+            
+            const sustainabilityText = "Antes de imprimir, pense em seu compromisso com o Meio Ambiente e o comprometimento com os Custos.";
+            const textWidth = ctx.measureText(sustainabilityText).width;
+            const startX = (canvas.width / scaleFactor - textWidth) / 2;
             let currentX = startX;
-
-            ctx.fillText(sustainabilityTextPart1, currentX, 220);
-            currentX += ctx.measureText(sustainabilityTextPart1).width;
-
+            
+            // Primeira parte do texto
+            const part1 = "Antes de imprimir, pense em seu compromisso com o ";
+            ctx.fillText(part1, currentX, 235);
+            currentX += ctx.measureText(part1).width;
+            
+            // "Meio Ambiente" em negrito
             ctx.font = "bold 12px Arial";
-            ctx.fillText(sustainabilityTextBold1, currentX, 220);
-            currentX += ctx.measureText(sustainabilityTextBold1).width;
-
+            const part2 = "Meio Ambiente";
+            ctx.fillText(part2, currentX, 235);
+            currentX += ctx.measureText(part2).width;
+            
+            // Continuação do texto normal
             ctx.font = "12px Arial";
-            ctx.fillText(sustainabilityTextPart2, currentX, 220);
-            currentX += ctx.measureText(sustainabilityTextPart2).width;
-
+            const part3 = " e o comprometimento com os ";
+            ctx.fillText(part3, currentX, 235);
+            currentX += ctx.measureText(part3).width;
+            
+            // "Custos" em negrito
             ctx.font = "bold 12px Arial";
-            ctx.fillText(sustainabilityTextBold2, currentX, 220);
+            ctx.fillText("Custos.", currentX, 235);
 
-            // Gera a imagem final
-            const dataURL = canvas.toDataURL("image/png");
-            
-            // Atualiza a prévia
-            document.getElementById("signature-preview").innerHTML = `<img src="${dataURL}" alt="Pré-visualização da Assinatura">`;
-            
-            // Esconde o canvas e mostra a prévia
-            document.getElementById("signature-canvas").style.display = "none";
-            document.getElementById("signature-preview").style.display = "block";
-            
-            // Mostra os botões de ação
-            document.getElementById("download-button").style.display = "flex";
-            document.getElementById("send-email-button").style.display = "flex";
+            // Gera a imagem final após todo o texto ser renderizado
+            setTimeout(() => {
+                const dataURL = canvas.toDataURL("image/png");
+                
+                // Atualiza a prévia
+                document.getElementById("signature-preview").innerHTML = `<img src="${dataURL}" alt="Pré-visualização da Assinatura">`;
+                
+                // Esconde o canvas e mostra a prévia
+                document.getElementById("signature-canvas").style.display = "none";
+                document.getElementById("signature-preview").style.display = "block";
+                
+                // Mostra os botões de ação
+                document.getElementById("download-button").style.display = "flex";
+                document.getElementById("send-email-button").style.display = "flex";
 
-            // Configura o botão de download
-            const downloadButton = document.getElementById("download-button");
-            downloadButton.onclick = () => {
-                downloadImage(dataURL, name, unit);
-            };
+                // Configura o botão de download
+                const downloadButton = document.getElementById("download-button");
+                downloadButton.onclick = () => {
+                    downloadImage(dataURL, name, unit);
+                };
+            }, 100);
         }
     };
 });
