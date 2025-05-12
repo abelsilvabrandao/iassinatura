@@ -501,7 +501,7 @@ async function loadUnitsToSelect() {
 let editingUnitId = null; // Variável global para armazenar o ID da unidade que está sendo editada
 
 // Ao editar uma unidade, preenche as certificações ou permite adicionar novas
-window.editUnit = async function(unitId, name, cnpj, address, number, complement, neighborhood, city, state, phone, cep) {
+window.editUnit = async function(unitId, name, cnpj, address, number, complement, neighborhood, city, state, cep) {
   editingUnitId = unitId; // Armazena o ID da unidade que está sendo editada
 
   // Abre o modal
@@ -1081,7 +1081,7 @@ document.getElementById("signature-form").addEventListener("submit", async (even
     logoImage.src = logo;
 
     logoImage.onload = () => {
-        ctx.drawImage(logoImage, 40, 40, 150, 75);
+        ctx.drawImage(logoImage, 24, 40, 180, 65);
 
         //Linha separadora
         ctx.setLineDash([5, 5]);

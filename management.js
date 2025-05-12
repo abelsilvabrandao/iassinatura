@@ -174,7 +174,13 @@ async function handleSectorSubmit(event) {
 
 async function handleUnitSubmit(event) {
     event.preventDefault();
-    
+
+    // Coleta as certificações
+    const certificationInputs = document.querySelectorAll('.certification');
+    const certifications = Array.from(certificationInputs)
+        .map(input => input.value)
+        .filter(value => value);
+
     try {
         const unitData = {
             name: document.getElementById('unit-name').value,
@@ -188,21 +194,29 @@ async function handleUnitSubmit(event) {
             state: document.getElementById('unit-state').value,
             phone: document.getElementById('unit-phone').value,
             site: document.getElementById('unit-site').value,
+            certifications: certifications,
             updatedAt: new Date().toISOString()
         };
 
-        // Handle image upload if provided
         const imageFile = document.getElementById('unit-image').files[0];
-        if (imageFile) {
-            unitData.image = await convertToBase64(imageFile);
-        }
-
         const editingId = document.getElementById('unit-form').dataset.editingId;
-        
+
         if (editingId) {
+            if (imageFile) {
+                unitData.image = await convertToBase64(imageFile);
+            } else {
+                // Preserva a imagem existente
+                const unitDoc = await getDoc(doc(db, 'units', editingId));
+                if (unitDoc.exists()) {
+                    unitData.image = unitDoc.data().image || null;
+                }
+            }
             await updateDoc(doc(db, 'units', editingId), unitData);
             Swal.fire('Sucesso!', 'Unidade atualizada com sucesso.', 'success');
         } else {
+            if (imageFile) {
+                unitData.image = await convertToBase64(imageFile);
+            }
             unitData.createdAt = new Date().toISOString();
             await addDoc(collection(db, 'units'), unitData);
             Swal.fire('Sucesso!', 'Unidade cadastrada com sucesso.', 'success');
@@ -211,10 +225,12 @@ async function handleUnitSubmit(event) {
         document.getElementById('unit-modal').classList.add('hidden');
         loadUnitsList();
     } catch (error) {
-        console.error("Erro ao salvar unidade:", error);
+        console.error('Erro ao salvar unidade:', error);
         Swal.fire('Erro!', 'Erro ao salvar unidade.', 'error');
     }
 }
+
+
 
 // Função auxiliar para converter imagem para Base64
 async function convertToBase64(file) {
@@ -228,6 +244,7 @@ async function convertToBase64(file) {
 
 async function editUnit(unitId, name, cnpj, address, number, complement, neighborhood, city, state, phone, cep) {
     try {
+        // Preenche os campos básicos
         document.getElementById('unit-name').value = name;
         document.getElementById('cnpj').value = cnpj;
         document.getElementById('address').value = address;
@@ -239,12 +256,54 @@ async function editUnit(unitId, name, cnpj, address, number, complement, neighbo
         document.getElementById('unit-phone').value = phone;
         document.getElementById('unit-cep').value = cep;
         document.getElementById('unit-form').dataset.editingId = unitId;
+
+        // Busca dados completos da unidade no Firestore
+        const unitDoc = await getDoc(doc(db, 'units', unitId));
+        if (unitDoc.exists()) {
+            const unitData = unitDoc.data();
+
+            // Preenche o campo site
+            document.getElementById('unit-site').value = unitData.site || '';
+
+            // Exibe a logo atual
+            const currentImage = document.getElementById('current-image');
+            if (unitData.image) {
+                currentImage.src = unitData.image;
+                currentImage.style.display = 'block';
+            } else {
+                currentImage.style.display = 'none';
+            }
+
+            // Popula as certificações
+            const certificationsContainer = document.getElementById('certifications-container');
+            certificationsContainer.innerHTML = ''; // Limpa certificações existentes
+
+            if (unitData.certifications && unitData.certifications.length > 0) {
+                unitData.certifications.forEach(certification => {
+                    const newCertificationInput = document.createElement('div');
+                    newCertificationInput.style.display = 'flex';
+                    newCertificationInput.style.alignItems = 'center';
+                    newCertificationInput.innerHTML = `
+                        <input type="text" class="certification" placeholder="Ex: ISO 9001:2015" style="flex: 1;" value="${certification}">
+                        <button type="button" class="certification-button remove-certification" style="margin-left: 5px;">-</button>
+                    `;
+                    certificationsContainer.appendChild(newCertificationInput);
+
+                    // Evento para remover o campo de certificação
+                    newCertificationInput.querySelector('.remove-certification').addEventListener('click', () => {
+                        certificationsContainer.removeChild(newCertificationInput);
+                    });
+                });
+            }
+        }
+
         document.getElementById('unit-modal').classList.remove('hidden');
     } catch (error) {
-        console.error("Erro ao carregar unidade:", error);
+        console.error('Erro ao carregar unidade:', error);
         Swal.fire('Erro!', 'Erro ao carregar dados da unidade.', 'error');
     }
 }
+
 
 async function deleteUnit(unitId) {
     const result = await Swal.fire({
@@ -281,7 +340,19 @@ function clearUnitModal() {
     document.getElementById('unit-cep').value = '';
     document.getElementById('unit-site').value = '';
     document.getElementById('unit-form').dataset.editingId = '';
+
+    // Limpar container de certificações
+    const certificationsContainer = document.getElementById('certifications-container');
+    certificationsContainer.innerHTML = '';
+
+    // Limpar imagem atual e esconder
+    const currentImage = document.getElementById('current-image');
+    if (currentImage) {
+        currentImage.src = '';
+        currentImage.style.display = 'none';
+    }
 }
+
 
 function clearSectorModal() {
     document.getElementById('sector-name').value = '';
@@ -408,7 +479,28 @@ function initializeManagement() {
             console.error('Erro ao fazer logout:', error);
             Swal.fire('Erro!', 'Erro ao fazer logout.', 'error');
         }
+        // Evento para botão de adicionar certificação no modal
+
     });
+          // Evento para botão de adicionar certificação no modal
+          const addCertificationButton = document.getElementById("add-certification");
+if (addCertificationButton) {
+  addCertificationButton.addEventListener("click", () => {
+    const certificationsContainer = document.getElementById("certifications-container");
+    const newCertificationInput = document.createElement("div");
+    newCertificationInput.style.display = "flex";
+    newCertificationInput.style.alignItems = "center";
+    newCertificationInput.innerHTML = `
+      <input type="text" class="certification" placeholder="Ex: ISO 9001:2015" style="flex: 1;">
+      <button type="button" class="certification-button remove-certification" style="margin-left: 5px;">-</button>
+    `;
+    certificationsContainer.appendChild(newCertificationInput);
+    newCertificationInput.querySelector(".remove-certification").addEventListener("click", () => {
+      certificationsContainer.removeChild(newCertificationInput);
+    });
+  });
+}
+
 }
 
 // Inicialização após o carregamento do DOM
