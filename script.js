@@ -112,7 +112,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         this.value = "https://" + this.value;
       }
     });
-    document.getElementById("cep").addEventListener("input", formatCep);
+    document.getElementById("unit-cep").addEventListener("input", formatCep);
+    document.getElementById("unit-cep").addEventListener("input", fetchAddress);
+
     document.getElementById("cnpj").addEventListener("input", formatCnpj);
     // Adiciona evento para o botão de adicionar certificação
     const addCertificationButton = document.getElementById("add-certification");

@@ -503,6 +503,58 @@ if (addCertificationButton) {
 
 }
 
+function formatCnpj(event) {
+  let value = event.target.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+  if (value.length > 14) {
+    value = value.slice(0, 14); // Limita o tamanho do CNPJ
+  }
+  // Formata o CNPJ
+  if (value.length > 12) {
+    value = value.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d)/, '$1.$2.$3/$4-$5');
+  } else if (value.length > 8) {
+    value = value.replace(/(\d{2})(\d{3})(\d{3})(\d)/, '$1.$2.$3/$4');
+  } else if (value.length > 5) {
+    value = value.replace(/(\d{2})(\d{3})(\d)/, '$1.$2.$3');
+  } else if (value.length > 2) {
+    value = value.replace(/(\d{2})(\d)/, '$1.$2');
+  }
+
+  event.target.value = value; // Atualiza o valor do campo de entrada
+}
+
+async function fetchAddress() {
+  const cepInput = document.getElementById("unit-cep");
+  const cep = cepInput.value.replace(/\D/g, '');
+  if (cep.length === 8) {
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await response.json();
+      if (!data.erro) {
+        document.getElementById("address").value = data.logradouro;
+        document.getElementById("unit-neighborhood").value = data.bairro;
+        document.getElementById("unit-city").value = data.localidade;
+        document.getElementById("unit-state").value = data.uf;
+      } else {
+        Swal.fire("CEP não encontrado", "O CEP informado não existe ou não foi encontrado.", "error");
+      }
+    } catch (error) {
+      console.error("Erro ao buscar endereço:", error);
+      Swal.fire("Erro!", "Não foi possível buscar o endereço.", "error");
+    }
+  }
+}
+
+function formatCep(event) {
+  let value = event.target.value.replace(/\D/g, '');
+  if (value.length > 8) {
+    value = value.slice(0, 8);
+  }
+  if (value.length > 5) {
+    value = value.replace(/(\d{5})(\d)/, '$1-$2');
+  }
+  event.target.value = value;
+}
+
 // Inicialização após o carregamento do DOM
 document.addEventListener('DOMContentLoaded', () => {
     // Verificar autenticação
@@ -513,5 +565,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         initializeManagement();
+
+        // Adiciona event listeners para CNPJ e CEP
+        const cnpjInput = document.getElementById("cnpj");
+        if (cnpjInput) {
+            cnpjInput.addEventListener("input", formatCnpj);
+        }
+
+        const cepInput = document.getElementById("unit-cep");
+        if (cepInput) {
+            cepInput.addEventListener("input", formatCep);
+            cepInput.addEventListener("input", fetchAddress);
+        }
     });
 });
