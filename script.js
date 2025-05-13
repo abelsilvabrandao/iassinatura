@@ -30,44 +30,67 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Verifique se o botão de adicionar unidade existe antes de adicionar o evento
-  if (addUnitButton) {
-    addUnitButton.onclick = function () {
-      Swal.fire({
-        title: 'Login',
-        html: `
-          <input type="text" id="username" class="swal2-input" placeholder="E-mail">
-          <input type="password" id="password" class="swal2-input" placeholder="Senha">
-        `,
-        focusConfirm: false,
-        showCancelButton: true,
-        confirmButtonText: 'Entrar',
-        allowEnterKey: true,
-        preConfirm: () => {
-          const username = document.getElementById("username").value;
-          const password = document.getElementById("password").value;
-          if (!username || !password) {
-            Swal.showValidationMessage(`Por favor, preencha todos os campos`);
-          }
-          return { username: username, password: password };
+if (addUnitButton) {
+  addUnitButton.onclick = function () {
+    Swal.fire({
+      title: 'Login',
+      html: `
+        <input type="text" id="username" class="swal2-input" placeholder="E-mail">
+        <input type="password" id="password" class="swal2-input" placeholder="Senha">
+      `,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Entrar',
+      allowEnterKey: true,
+      preConfirm: () => {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        if (!username || !password) {
+          Swal.showValidationMessage(`Por favor, preencha todos os campos`);
         }
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          await login(result.value.username, result.value.password);
-        }
-      });
-    }
-  }
+        return { username: username, password: password };
+      }
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await login(result.value.username, result.value.password);
+      }
+    });
 
+    // Adiciona evento para capturar Enter no campo senha e disparar login
+    Swal.getPopup().querySelector('#password').addEventListener('keydown', async (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        const username = Swal.getPopup().querySelector('#username').value;
+        const password = Swal.getPopup().querySelector('#password').value;
+        if (username && password) {
+          await login(username, password);
+          Swal.close();
+        } else {
+          Swal.showValidationMessage('Por favor, preencha todos os campos');
+        }
+      }
+    });
+  }
+}
   // Função para realizar o login
-  const login = async (username, password) => {
-    try {
-      await signInWithEmailAndPassword(auth, username, password);
-      Swal.fire("Sucesso!", "Login realizado com sucesso.", "success");
-      window.location.href = 'management.html';
-    } catch (error) {
-      Swal.fire("Erro!", "Credenciais inválidas.", "error");
-    }
-  };
+const login = async (username, password) => {
+  try {
+    Swal.fire({
+      title: 'Entrando...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+    await signInWithEmailAndPassword(auth, username, password);
+    Swal.close();
+    Swal.fire("Sucesso!", "Login realizado com sucesso.", "success");
+    window.location.href = 'management.html';
+  } catch (error) {
+    Swal.close();
+    Swal.fire("Erro!", "Credenciais inválidas.", "error");
+  }
+};
 
   // Adicionando o evento de escuta para os campos de entrada
   const usernameInput = document.getElementById("username");
