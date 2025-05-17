@@ -367,6 +367,40 @@ $(document).ready(function() {
     });
 });
 
+function formatNameInput(value) {
+  const exceptions = ['de', 'do', 'da', 'das', 'dos', 'e', 'em', 'no', 'na', 'com', "d'"];
+  return value
+    .toLowerCase()
+    .split(' ')
+    .map((word, index) => {
+      if (exceptions.includes(word) && index !== 0) {
+        return word;
+      }
+      // Manter D' em maiúscula quando parte de nomes como D'Ávila
+      if (word.startsWith("d'")) {
+        return "D'" + word.charAt(2).toUpperCase() + word.slice(3);
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(' ');
+}
+
+const nameInput = document.getElementById('name');
+
+if (nameInput) {
+  nameInput.addEventListener('input', (event) => {
+    const cursorPosition = nameInput.selectionStart;
+    const originalLength = nameInput.value.length;
+
+    const formattedValue = formatNameInput(nameInput.value);
+    nameInput.value = formattedValue;
+
+    // Ajusta a posição do cursor para não pular durante a digitação
+    const newLength = formattedValue.length;
+    const diff = newLength - originalLength;
+    nameInput.selectionStart = nameInput.selectionEnd = cursorPosition + diff;
+  });
+}
 // Função para formatar o CNPJ
 function formatCnpj(event) {
   let value = event.target.value.replace(/\D/g, ''); // Remove caracteres não numéricos
