@@ -32,16 +32,36 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Verifique se o botão de adicionar unidade existe antes de adicionar o evento
 if (addUnitButton) {
   addUnitButton.onclick = function () {
-    Swal.fire({
-      title: 'Login',
-      html: `
-        <input type="text" id="username" class="swal2-input" placeholder="E-mail">
-        <input type="password" id="password" class="swal2-input" placeholder="Senha">
-      `,
-      focusConfirm: false,
-      showCancelButton: true,
-      confirmButtonText: 'Entrar',
-      allowEnterKey: true,
+Swal.fire({
+  title: `
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <img src="logointer.png" alt="Logo" style="width: 200px; margin-bottom: 3px;">
+      <h2 style="margin: 0 0 3px 0; font-size: 1.6rem; font-weight: bold;">
+        <span style="color: #14532d;">iAssinaturas</span>
+      </h2>
+      <p style="font-size: 0.95rem; color: #555; margin: 0 0 3px 0;">Gerenciamento de Unidades e Setores</p>
+    </div>
+  `,
+  html: `
+    <div style="display: flex; justify-content: center; margin-top: 0; margin-bottom: 0;">
+      <div style="width: 100%; max-width: 320px; display: flex; flex-direction: column; align-items: center;">
+        <input type="email" id="username" class="swal2-input" placeholder="usuario@intermaritima.com.br" style="margin-bottom: 6px;">
+        <input type="password" id="password" class="swal2-input" placeholder="••••••••" style="margin-bottom: 0;">
+      </div>
+    </div>
+  `,
+  focusConfirm: false,
+  showCancelButton: true,
+  confirmButtonText: 'Entrar',
+  cancelButtonText: 'Cancelar',
+  confirmButtonColor: '#22c55e', // verde
+  cancelButtonColor: '#ef4444',  // vermelho
+  allowEnterKey: true,
+  customClass: {
+  popup: 'custom-swal-popup',
+  confirmButton: 'swal2-styled',
+  cancelButton: 'swal2-styled'
+  },
       preConfirm: () => {
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
@@ -346,32 +366,6 @@ $(document).ready(function() {
         }
     });
 });
-
-// Event listener para o formulário de adicionar setor
-// document.getElementById('add-sector-form').addEventListener('submit', async (e) => {
-//     e.preventDefault();
-    
-//     const sectorName = document.getElementById('new-sector-name').value;
-    
-//     try {
-//         // Adicionar setor ao Firestore
-//         await addDoc(collection(db, 'sectors'), {
-//             name: sectorName,
-//             createdAt: new Date().toISOString()
-//         });
-        
-//         // Limpar o formulário
-//         document.getElementById('new-sector-name').value = '';
-        
-//         // Atualizar a lista de setores
-//         await loadSectors();
-        
-//         Swal.fire('Sucesso!', 'Setor adicionado com sucesso!', 'success');
-//     } catch (error) {
-//         console.error("Erro ao adicionar setor:", error);
-//         Swal.fire('Erro!', 'Erro ao adicionar setor.', 'error');
-//     }
-// });
 
 // Função para formatar o CNPJ
 function formatCnpj(event) {
@@ -1288,6 +1282,7 @@ document.getElementById("signature-form").addEventListener("submit", async (even
                 const dataURL = canvas.toDataURL("image/png");
                 
                 // Atualiza a prévia
+                document.getElementById('clear-preview-button').style.display = 'flex';
                 document.getElementById("signature-preview").innerHTML = `<img src="${dataURL}" alt="Pré-visualização da Assinatura">`;
                 
                 // Esconde o canvas e mostra a prévia
@@ -1307,3 +1302,87 @@ document.getElementById("signature-form").addEventListener("submit", async (even
         }
     };
 });
+
+document.getElementById('clear-fields-button').addEventListener('click', () => {
+  const form = document.getElementById('signature-form');
+  form.reset();
+
+  // Limpar campos adicionais que não são resetados pelo form.reset()
+  document.getElementById('phones-container').innerHTML = `
+    <div class="phone-input">
+      <input type="text" name="phone" class="phone-field" placeholder="(71) 9 9999-9999">
+      <select class="phone-type">
+        <option value="fixo">Fixo</option>
+        <option value="celular" selected>Celular</option>
+      </select>
+      <button type="button" id="add-phone" class="add-phone">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+  `;
+  // Limpar select unidade
+const unitSelect = document.getElementById('unit');
+if (unitSelect) {
+  unitSelect.value = '';
+  unitSelect.dispatchEvent(new Event('change'));
+}
+
+// Limpar select setor (Select2)
+const sectorSelect = $('#sector');
+if (sectorSelect.length) {
+  sectorSelect.val(null).trigger('change');
+}
+
+// Reatribuir event listener para o botão de adicionar telefone
+const addPhoneButton = document.getElementById('add-phone');
+if (addPhoneButton) {
+  addPhoneButton.addEventListener('click', () => {
+    // Copie aqui a função que adiciona um novo campo de telefone
+    // Exemplo:
+    const phonesContainer = document.getElementById('phones-container');
+    const phoneDiv = document.createElement('div');
+    phoneDiv.classList.add('phone-input');
+    phoneDiv.innerHTML = `
+      <input type="text" name="phone" class="phone-field" placeholder="(71) 9 9999-9999">
+      <select class="phone-type">
+        <option value="fixo">Fixo</option>
+        <option value="celular" selected>Celular</option>
+      </select>
+      <button type="button" class="remove-phone">
+        <i class="fas fa-minus"></i>
+      </button>
+    `;
+    phonesContainer.appendChild(phoneDiv);
+
+    // Adicione event listener para remover o campo
+    phoneDiv.querySelector('.remove-phone').addEventListener('click', () => {
+      phonesContainer.removeChild(phoneDiv);
+    });
+
+    // Adicione event listeners para formatação e troca de tipo, se necessário
+  });
+}
+});
+
+document.getElementById('clear-preview-button').addEventListener('click', () => {
+  // Limpa o conteúdo da pré-visualização
+  const previewDiv = document.getElementById('signature-preview');
+  previewDiv.innerHTML = '';
+
+  // Esconde o canvas e a pré-visualização
+  document.getElementById('signature-canvas').style.display = 'none';
+  previewDiv.style.display = 'none';
+
+  // Esconde os botões de ação
+  document.getElementById('download-button').style.display = 'none';
+  document.getElementById('send-email-button').style.display = 'none';
+  document.getElementById('clear-preview-button').style.display = 'none';
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const yearSpan = document.getElementById('current-year');
+  if (yearSpan) {
+    yearSpan.textContent = new Date().getFullYear();
+  }
+});
+

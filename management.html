@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciamento - Intermarítima</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Gerenciamento Unidades e Setores - Intermarítima</title>
+    <link rel="stylesheet" href="management.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="management.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -47,9 +47,10 @@
 </head>
 <body>
     <div class="container">
-        <img src="logointer.png" alt="Logo" class="logo">
-        <h1>Gerenciamento</h1>
-        
+<div class="header-top">
+  <img src="logointer.png" alt="Logo" class="logo">
+  <h1>Gerenciamento de Unidades e Setores</h1>
+</div>      
         <div class="management-tabs">
             <button class="tab-button active" data-tab="units">
                 <i class="fas fa-building"></i> Unidades
@@ -59,28 +60,38 @@
             </button>
         </div>
 
-        <div class="tab-content" id="units-content">
-            <button id="new-unit-button" class="add-button">
-                <i class="fas fa-plus"></i> Nova Unidade
-            </button>
-            <div id="units-list">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Logo</th>
-                            <th>Unidade</th>
-                            <th>CNPJ</th>
-                            <th>Endereço</th>
-                            <th>CEP</th>
-                            <th>Certificações</th>
-                            <th>Site</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
+<div id="units-content" class="tab-content">
+    <button id="new-unit-button" class="add-button">
+        <i class="fas fa-plus"></i> Nova Unidade
+    </button>
+    <input type="text" id="unit-filter" placeholder="Digite para buscar..." style="margin: 10px 0; padding: 8px; width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;">
+    <div id="units-list">
+        <table>
+            <thead>
+                <tr>
+                    <th>Logo</th>
+                    <th>Unidade</th>
+                    <th>CNPJ</th>
+                    <th>Endereço</th>
+                    <th>CEP</th>
+                    <th>Certificações</th>
+                    <th>Site</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+        <div id="sectors-content" class="tab-content hidden">
+    <button id="new-sector-button" class="add-button">
+        <i class="fas fa-plus"></i> Novo Setor
+    </button>
+    <input type="text" id="sector-filter" placeholder="Filtrar setores..." style="margin: 10px 0; padding: 8px; width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;">
+    <div id="sectors-list"></div>
+    </div>
+
 
         <div class="tab-content hidden" id="sectors-content">
             <button id="new-sector-button" class="add-button">
@@ -92,7 +103,7 @@
         <!-- Modal para Unidades -->
         <div id="unit-modal" class="modal hidden">
             <div class="modal-content">
-                <h2>Cadastro de Unidade</h2>
+                <h2 id="unit-modal-title">Cadastro de Unidade</h2>
                 <form id="unit-form">
                     <div class="form-group">
                         <label for="unit-name">Nome da Unidade:</label>
@@ -165,7 +176,7 @@
         <!-- Modal para Setores -->
         <div id="sector-modal" class="modal hidden">
             <div class="modal-content">
-                <h2>Cadastro de Setor</h2>
+                <h2 id="sector-modal-title">Cadastro de Setor</h2>
                 <form id="sector-form">
                     <div class="form-group">
                         <label for="sector-name">Nome do Setor:</label>
@@ -200,6 +211,10 @@
                 <i class="fas fa-sign-out-alt"></i> Sair
             </button>
         </div>
+            <footer class="footer">
+            <p>&copy; 2024 Intermarítima. Todos os direitos reservados.</p>
+            <p>Desenvolvido por Abel Silva Brandão | Versão 1.0.0</p>
+            </footer>
     </div>
 </body>
 

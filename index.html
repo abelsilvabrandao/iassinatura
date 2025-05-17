@@ -36,11 +36,15 @@
 </head>
 <body>
   <div class="container">
+<div class="header-top">
+  <div class="header-content">
     <img src="logointer.png" alt="Logo" class="logo">
     <h1>iAssinaturas</h1>
-    <button id="add-unit-button">
-      <i class="fas fa-cogs"></i> GERENCIAR UNIDADES E SETORES
-    </button>
+  </div>
+  <button id="add-unit-button">
+    <i class="fas fa-user-shield"></i> Admin
+  </button>
+</div>
     <div class="form-preview-wrapper">
       <form id="signature-form">
         <label for="unit">Selecione a unidade:</label>
@@ -75,15 +79,23 @@
           </div>
         </div>
 
-        <button type="submit">
-          <i class="fas fa-pencil-alt"></i> GERAR ASSINATURA
-        </button>            
+<div class="form-buttons">
+<button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors duration-200">
+  <i class="fas fa-signature mr-2"></i> Gerar Assinatura
+</button>
+
+<button type="button" id="clear-fields-button" class="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
+  <i class="fas fa-eraser"></i>
+  Limpar Campos
+</button>
+
+</div>   
       </form>
       <div id="preview">
-        <h2><i class="fas fa-eye"></i> Pré Visualização</h2>
+        <h2><i class="fas fa-image"></i> Pré Visualização</h2>
         <div class="signature-preview-container">
           <div class="signature-preview-scroll">
-            <div id="signature-preview"></div>
+            <div id="signature-preview" class="placeholder-preview"></div>
             <canvas id="signature-canvas" style="display: none;"></canvas>
           </div>
         </div>
@@ -94,9 +106,17 @@
           <button id="send-email-button" style="display: none;">
             <i class="fas fa-envelope"></i> Enviar por E-mail
           </button>
+          <button id="clear-preview-button" style="background-color: #dc3545; color: white; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; display: none;">
+          <i class="fas fa-times"></i> Limpar Visualização
+          </button>
         </div>
       </div>  
     </div>
+      <footer id="site-footer" class="site-footer">
+  <p>&copy; <span id="current-year"></span> Intermarítima. Todos os direitos reservados.</p>
+  <p>Desenvolvido por Abel Silva Brandão | Versão 1.0.0</p>
+</footer>
   </div>
+
 </body>
 </html>

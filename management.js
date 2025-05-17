@@ -17,6 +17,9 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+let allSectors = [];
+let allUnits = [];
+
 // Função auxiliar para criar células da tabela
 function createCell(content) {
     const td = document.createElement("td");
@@ -34,58 +37,75 @@ async function loadUnitsList() {
 
     try {
         const querySnapshot = await getDocs(collection(db, "units"));
+        allUnits = [];
         querySnapshot.forEach((doc) => {
-            const unit = doc.data();
-            const tr = document.createElement("tr");
-            
-            // Logo
-            const logoCell = document.createElement("td");
-            if (unit.image) {
-                const img = document.createElement("img");
-                img.src = unit.image;
-                img.alt = unit.name;
-                img.style.maxWidth = "80px";
-                logoCell.appendChild(img);
-            }
-            tr.appendChild(logoCell);
-
-            // Dados da unidade
-            tr.appendChild(createCell(unit.name));
-            tr.appendChild(createCell(unit.cnpj));
-            tr.appendChild(createCell(`${unit.address}, ${unit.number}${unit.complement ? `, ${unit.complement}` : ''}, ${unit.neighborhood}, ${unit.city} - ${unit.state}`));
-            tr.appendChild(createCell(unit.cep));
-            tr.appendChild(createCell(unit.certifications ? unit.certifications.join(", ") : ""));
-            tr.appendChild(createCell(unit.site));
-
-            // Botões de ação
-            const actionsCell = document.createElement("td");
-            const actionsDiv = document.createElement("div");
-            actionsDiv.className = "action-buttons";
-
-            // Botão de editar
-            const editButton = document.createElement("button");
-            editButton.className = "btn-edit";
-            editButton.innerHTML = '<i class="fas fa-edit"></i>';
-            editButton.onclick = () => editUnit(doc.id, unit.name, unit.cnpj, unit.address, unit.number, unit.complement, unit.neighborhood, unit.city, unit.state, unit.phone, unit.cep);
-
-            // Botão de excluir
-            const deleteButton = document.createElement("button");
-            deleteButton.className = "btn-delete";
-            deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
-            deleteButton.onclick = () => deleteUnit(doc.id);
-
-            actionsDiv.appendChild(editButton);
-            actionsDiv.appendChild(deleteButton);
-            actionsCell.appendChild(actionsDiv);
-            tr.appendChild(actionsCell);
-
-            tbody.appendChild(tr);
+            allUnits.push({ id: doc.id, ...doc.data() });
         });
+
+        if (allUnits.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8">Nenhuma unidade cadastrada.</td></tr>';
+            return;
+        }
+
+        renderUnitsTable(allUnits);
     } catch (error) {
         console.error("Erro ao carregar unidades:", error);
         tbody.innerHTML = '<tr><td colspan="8" class="error">Erro ao carregar unidades.</td></tr>';
     }
 }
+
+function renderUnitsTable(units) {
+    const tbody = document.querySelector("#units-list tbody");
+    tbody.innerHTML = "";
+
+    units.forEach(unit => {
+        const tr = document.createElement("tr");
+
+        // Logo
+        const logoCell = document.createElement("td");
+        if (unit.image) {
+            const img = document.createElement("img");
+            img.src = unit.image;
+            img.alt = unit.name;
+            img.style.maxWidth = "80px";
+            logoCell.appendChild(img);
+        }
+        tr.appendChild(logoCell);
+
+        // Dados da unidade
+        tr.appendChild(createCell(unit.name));
+        tr.appendChild(createCell(unit.cnpj));
+        tr.appendChild(createCell(`${unit.address}, ${unit.number}${unit.complement ? `, ${unit.complement}` : ''}, ${unit.neighborhood}, ${unit.city} - ${unit.state}`));
+        tr.appendChild(createCell(unit.cep));
+        tr.appendChild(createCell(unit.certifications ? unit.certifications.join(", ") : ""));
+        tr.appendChild(createCell(unit.site));
+
+        // Botões de ação
+        const actionsCell = document.createElement("td");
+        const actionsDiv = document.createElement("div");
+        actionsDiv.className = "action-buttons";
+
+        // Botão de editar
+        const editButton = document.createElement("button");
+        editButton.className = "btn-edit";
+        editButton.innerHTML = '<i class="fas fa-edit"></i>';
+        editButton.onclick = () => editUnit(unit.id, unit.name, unit.cnpj, unit.address, unit.number, unit.complement, unit.neighborhood, unit.city, unit.state, unit.phone, unit.cep);
+
+        // Botão de excluir
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "btn-delete";
+        deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteButton.onclick = () => deleteUnit(unit.id);
+
+        actionsDiv.appendChild(editButton);
+        actionsDiv.appendChild(deleteButton);
+        actionsCell.appendChild(actionsDiv);
+        tr.appendChild(actionsCell);
+
+        tbody.appendChild(tr);
+    });
+}
+
 
 // Funções para Setores
 async function loadSectorsList() {
@@ -94,53 +114,59 @@ async function loadSectorsList() {
 
     try {
         const sectorsSnapshot = await getDocs(collection(db, 'sectors'));
-        const sectors = [];
+        allSectors = [];
         sectorsSnapshot.forEach(doc => {
-            sectors.push({ id: doc.id, ...doc.data() });
+            allSectors.push({ id: doc.id, ...doc.data() });
         });
 
-        if (sectors.length === 0) {
+        if (allSectors.length === 0) {
             sectorsContainer.innerHTML = '<p>Nenhum setor cadastrado.</p>';
             return;
         }
 
-        const table = document.createElement('table');
-        table.innerHTML = `
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Descrição</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        `;
-
-        const tbody = table.querySelector('tbody');
-        sectors.forEach(sector => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${sector.name}</td>
-                <td>${sector.description || '-'}</td>
-                <td>
-                    <button onclick="editSector('${sector.id}')" class="btn-edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button onclick="deleteSector('${sector.id}')" class="btn-delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
-
-        sectorsContainer.innerHTML = '';
-        sectorsContainer.appendChild(table);
+        renderSectorsTable(allSectors);
     } catch (error) {
         console.error("Erro ao carregar setores:", error);
         sectorsContainer.innerHTML = '<p class="error">Erro ao carregar setores.</p>';
     }
 }
+
+function renderSectorsTable(sectors) {
+    const sectorsContainer = document.getElementById('sectors-list');
+    const table = document.createElement('table');
+    table.innerHTML = `
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    `;
+
+    const tbody = table.querySelector('tbody');
+    sectors.forEach(sector => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${sector.name}</td>
+            <td>${sector.description || '-'}</td>
+            <td>
+                <button onclick="editSector('${sector.id}')" class="btn-edit">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button onclick="deleteSector('${sector.id}')" class="btn-delete">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    sectorsContainer.innerHTML = '';
+    sectorsContainer.appendChild(table);
+}
+
 
 async function handleSectorSubmit(event) {
     event.preventDefault();
@@ -245,6 +271,7 @@ async function convertToBase64(file) {
 async function editUnit(unitId, name, cnpj, address, number, complement, neighborhood, city, state, phone, cep) {
     try {
         // Preenche os campos básicos
+        document.getElementById('unit-modal-title').textContent = 'Alteração de Dados da Unidade';
         document.getElementById('unit-name').value = name;
         document.getElementById('cnpj').value = cnpj;
         document.getElementById('address').value = address;
@@ -365,6 +392,7 @@ async function editSector(sectorId) {
         const sectorDoc = await getDoc(doc(db, 'sectors', sectorId));
         if (sectorDoc.exists()) {
             const sectorData = sectorDoc.data();
+            document.getElementById('sector-modal-title').textContent = 'Alteração de Setores';
             document.getElementById('sector-name').value = sectorData.name;
             document.getElementById('sector-description').value = sectorData.description || '';
             document.getElementById('sector-form').dataset.editingId = sectorId;
@@ -458,11 +486,15 @@ function initializeManagement() {
     // Event listeners para botões de adicionar
     document.getElementById('new-unit-button').addEventListener('click', () => {
         clearUnitModal();
+        document.getElementById('unit-modal-title').textContent = 'Cadastro de Nova Unidade';
+
         document.getElementById('unit-modal').classList.remove('hidden');
     });
 
     document.getElementById('new-sector-button').addEventListener('click', () => {
         clearSectorModal();
+        document.getElementById('sector-modal-title').textContent = 'Cadastro de Novo Setor';
+
         document.getElementById('sector-modal').classList.remove('hidden');
     });
 
@@ -577,5 +609,34 @@ document.addEventListener('DOMContentLoaded', () => {
             cepInput.addEventListener("input", formatCep);
             cepInput.addEventListener("input", fetchAddress);
         }
+        const sectorFilterInput = document.getElementById('sector-filter');
+    if (sectorFilterInput) {
+        sectorFilterInput.addEventListener('input', () => {
+            const filterText = sectorFilterInput.value.toLowerCase();
+            const filteredSectors = allSectors.filter(sector =>
+                sector.name.toLowerCase().includes(filterText)
+            );
+            renderSectorsTable(filteredSectors);
+        });
+    }
+const unitFilterInput = document.getElementById('unit-filter');
+if (unitFilterInput) {
+    unitFilterInput.addEventListener('input', () => {
+        const filterText = unitFilterInput.value.toLowerCase();
+        const filteredUnits = allUnits.filter(unit => {
+            const address = `${unit.address}, ${unit.number}${unit.complement ? `, ${unit.complement}` : ''}, ${unit.neighborhood}, ${unit.city} - ${unit.state}`;
+            const certifications = unit.certifications ? unit.certifications.join(", ") : "";
+            return (
+                (unit.name && unit.name.toLowerCase().includes(filterText)) ||
+                (unit.cnpj && unit.cnpj.toLowerCase().includes(filterText)) ||
+                (address.toLowerCase().includes(filterText)) ||
+                (unit.cep && unit.cep.toLowerCase().includes(filterText)) ||
+                (certifications.toLowerCase().includes(filterText)) ||
+                (unit.site && unit.site.toLowerCase().includes(filterText))
+            );
+        });
+        renderUnitsTable(filteredUnits);
+    });
+}
     });
 });

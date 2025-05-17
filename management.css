@@ -1,0 +1,421 @@
+/* Estilos básicos para body e fonte */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 10px;
+  min-height: 100vh;
+}
+
+/* Container principal */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo */
+.logo {
+  width: 180px;
+  height: 65px;
+  margin: 0 auto 20px;
+  display: block;
+}
+
+/* Cabeçalho */
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 24px;
+}
+
+/* Abas de gerenciamento */
+.management-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+
+.tab-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.tab-button.active,
+.tab-button:hover {
+  background-color: #145912;
+}
+
+/* Botões de adicionar */
+.add-button {
+  background-color: #145912;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.add-button:hover {
+  background-color: #00b377;
+}
+
+/* Campos de filtro */
+.filter-input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* Listas de unidades e setores */
+#units-list, #sectors-list {
+  width: 100%;
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  padding: 5px;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+#units-list table, #sectors-list table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#units-list th, #units-list td, #sectors-list th, #sectors-list td {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+#units-list th, #sectors-list th {
+  background-color: #0a5c1b;
+  color: white;
+  font-weight: 600;
+}
+
+
+#units-list tr:nth-child(even), #sectors-list tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+#units-list tr:hover, #sectors-list tr:hover {
+  background-color: #f5f5f5;
+}
+
+/* Botões de ação */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btn-edit, .btn-delete {
+  width: 35px;
+  height: 35px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.btn-edit {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-edit:hover {
+  background-color: #0056b3;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-delete:hover {
+  background-color: #c82333;
+}
+
+/* Botões de navegação */
+.header-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.header-top {
+  text-align: center;
+  padding: 15px 10px;
+  background-color: #145912;
+  color: white;
+  font-size: 14px;
+  margin-top: 0;
+  padding-bottom: 25px;
+  border-radius: 8px 8px 0 0;
+}
+
+.header-top img.logo {
+  display: block;
+  margin: 0 auto 10px;
+  max-height: 65px;
+}
+
+.header-top h1 {
+  font-size: 20px;
+  margin: 10px 0;
+  color: white;
+  font-weight: 600;
+}
+
+.header-top button {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  margin-top: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.header-top button:hover {
+  background-color: #00b377;
+}
+
+
+.back-button,
+.logout-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.back-button:hover,
+.logout-button:hover {
+  background-color: #145912;
+}
+
+/* Modais */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 1000;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px 40px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  margin: 40px auto;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.modal-content h2 {
+  color: #145912;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+  text-align: center;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  border-bottom: 3px solid #145912;
+  padding-bottom: 10px;
+}
+
+.modal-content form {
+  display: grid;
+  gap: 15px;
+}
+
+.modal-content label {
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.modal-content input[type="text"],
+.modal-content input[type="url"],
+.modal-content input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.modal-content input[type="text"]:focus,
+.modal-content input[type="url"]:focus {
+  border-color: #145912;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(20, 89, 18, 0.1);
+}
+
+/* Botões do Modal */
+.modal-content .button-group {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.modal-content button[type="submit"],
+.modal-content button[type="button"] {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.modal-content button[type="submit"] {
+  background-color: #145912;
+  color: white;
+}
+
+.modal-content button[type="submit"]:hover {
+  background-color: #0d400c;
+  transform: translateY(-1px);
+}
+
+.modal-content button[type="button"] {
+  background-color: #dc3545;
+  color: white;
+}
+
+.modal-content button[type="button"]:hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+}
+
+/* Exceção para o botão de adicionar certificação */
+.modal-content button.add-certification {
+  background-color: #145912;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.modal-content button.add-certification:hover {
+  background-color: #0d400c;
+}
+
+/* Container de Certificações */
+#certifications-container {
+  display: grid;
+  gap: 10px;
+  align-items: center;
+}
+
+#certifications-container div {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.certification-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #145912;
+  color: white;
+}
+
+/* Classe para esconder conteúdo */
+.hidden {
+  display: none !important;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.form-actions button {
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #145912;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0d400c;
+}
+
+.btn-secondary {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #c82333;
+}
+
+.footer {
+  text-align: center;
+  padding: 15px 10px;
+  background-color: #145912;
+  color: white;
+  font-size: 14px;
+  margin-top: 20px;
+  border-radius: 0 0 8px 8px;
+}
+
+
