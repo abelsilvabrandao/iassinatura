@@ -9,6 +9,7 @@
     <script type="module" src="management.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         .select2-container {
             width: 100% !important;
@@ -63,7 +64,12 @@
     <button id="new-unit-button" class="add-button">
         <i class="fas fa-plus"></i> Nova Unidade
     </button>
-    <input type="text" id="unit-filter" placeholder="Digite para buscar..." style="margin: 10px 0; padding: 8px; width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;">
+    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 5px;">
+  <button id="download-excel-button" class="btn-download" title="Download Excel">
+    <i class="fas fa-file-excel"></i> Exportar Excel
+  </button>
+</div>
+<input type="text" id="unit-filter" placeholder="Digite para buscar..." style="margin: 10px 0; padding: 8px; width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;">
     <div id="units-list">
         <table>
             <thead>
@@ -86,7 +92,12 @@
     <button id="new-sector-button" class="add-button">
         <i class="fas fa-plus"></i> Novo Setor
     </button>
-    <input type="text" id="sector-filter" placeholder="Filtrar setores..." style="margin: 10px 0; padding: 8px; width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;">
+<div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 5px;">
+  <button id="download-excel-sectors-button" class="btn-download" title="Download Excel">
+    <i class="fas fa-file-excel"></i> Exportar Excel
+  </button>
+</div>
+<input type="text" id="sector-filter" placeholder="Filtrar setores..." style="margin: 10px 0; padding: 8px; width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;">
     <div id="sectors-list"></div>
     </div>
         <div class="tab-content hidden" id="sectors-content">

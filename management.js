@@ -169,6 +169,18 @@ function renderSectorsTable(sectors) {
     sectorsContainer.appendChild(table);
 }
 
+function exportTableToExcel(tableId, filename = 'tabela.xlsx') {
+  const table = document.getElementById(tableId);
+  const wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+  XLSX.writeFile(wb, filename);
+}
+document.getElementById('download-excel-sectors-button').addEventListener('click', () => {
+  exportTableToExcel('sectors-list', 'setores.xlsx');
+});
+
+document.getElementById('download-excel-button').addEventListener('click', () => {
+  exportTableToExcel('units-list', 'unidades.xlsx');
+});
 
 
 async function handleSectorSubmit(event) {
