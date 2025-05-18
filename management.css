@@ -11,11 +11,12 @@ body {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  background: white;
   padding: 30px;
+  background: white;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  overflow-x: hidden;
 }
+
 
 /* Logo */
 .logo {
@@ -71,7 +72,7 @@ h1 {
 }
 
 .add-button:hover {
-  background-color: #00b377;
+  background-color: #218838;
 }
 
 /* Campos de filtro */
@@ -86,19 +87,22 @@ h1 {
 }
 
 /* Listas de unidades e setores */
-#units-list, #sectors-list {
-  width: 100%;
+#units-list,
+#sectors-list {
   max-height: 400px;
   overflow-y: auto;
-  border: 1px solid #ddd;
-  padding: 5px;
-  border-radius: 4px;
-  background-color: #fff;
+  overflow-x: auto;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
 
-#units-list table, #sectors-list table {
+#units-list table,
+#sectors-list table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate; /* para o sticky funcionar melhor */
+  border-spacing: 0;
+  min-width: 800px; /* força o scroll horizontal se precisar */
 }
 
 #units-list th, #units-list td, #sectors-list th, #sectors-list td {
@@ -113,13 +117,25 @@ h1 {
   font-weight: 600;
 }
 
-
 #units-list tr:nth-child(even), #sectors-list tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
 #units-list tr:hover, #sectors-list tr:hover {
   background-color: #f5f5f5;
+}
+
+/* Responsivo: em telas menores, permita rolagem horizontal */
+@media (max-width: 768px) {
+  #units-list,
+  #sectors-list {
+    overflow-x: scroll;
+  }
+
+  #units-list table,
+  #sectors-list table {
+    min-width: 768px;
+  }
 }
 
 /* Botões de ação */
@@ -130,26 +146,28 @@ h1 {
 }
 
 .btn-edit, .btn-delete {
-  width: 35px;
-  height: 35px;
+  padding: 8px 12px;
   border: none;
-  border-radius: 50%;
+  border-radius: 6px; /* Retangular com cantos suaves */
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  font-size: 14px;
   transition: background-color 0.3s ease;
 }
 
+/* Botão Editar (verde) */
 .btn-edit {
-  background-color: #007bff;
+  background-color: #28a745;
   color: white;
 }
 
 .btn-edit:hover {
-  background-color: #0056b3;
+  background-color: #218838;
 }
 
+/* Botão Delete (mantém como está) */
 .btn-delete {
   background-color: #dc3545;
   color: white;
@@ -158,6 +176,7 @@ h1 {
 .btn-delete:hover {
   background-color: #c82333;
 }
+
 
 /* Botões de navegação */
 .header-actions {
@@ -417,5 +436,19 @@ h1 {
   margin-top: 20px;
   border-radius: 0 0 8px 8px;
 }
+
+#units-list thead th,
+#sectors-list thead th {
+  position: sticky;
+  top: 0;
+  background-color: #0a5c1b;
+  z-index: 10;
+  color: white;
+  font-weight: 600;
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
 
 

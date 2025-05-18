@@ -12,6 +12,14 @@
   <script type="module" src="script.js"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
+<!-- Animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<!-- Tippy.js -->
+<link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+
   <style>
     .select2-container {
       width: 100% !important;
@@ -34,6 +42,22 @@
     }
   </style>
 </head>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    tippy('#add-unit-button', {
+      onShow(instance) {
+        const box = instance.popper.querySelector('.tippy-box');
+        box.classList.add('animate__animated', 'animate__tada');
+
+        // Remove a animação após ela rodar para não repetir no hover seguinte
+        box.addEventListener('animationend', () => {
+          box.classList.remove('animate__animated', 'animate__tada');
+        }, { once: true });
+      }
+    });
+  });
+</script>
+
 <body>
   <div class="container">
 <div class="header-top">
@@ -41,9 +65,10 @@
     <img src="logointer.png" alt="Logo" class="logo">
     <h1>iAssinaturas</h1>
   </div>
-  <button id="add-unit-button">
-    <i class="fas fa-user-shield"></i> Admin
-  </button>
+<button id="add-unit-button" data-tippy-content="Cadastro de Unidades e Setores">
+  <i class="fas fa-user-shield"></i> Admin
+</button>
+
 </div>
     <div class="form-preview-wrapper">
       <form id="signature-form">
@@ -107,7 +132,7 @@
             <i class="fas fa-envelope"></i> Enviar por E-mail
           </button>
           <button id="clear-preview-button" style="background-color: #dc3545; color: white; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; display: none;">
-          <i class="fas fa-times"></i> Limpar Visualização
+          <i class="fas fa-eraser"></i> Limpar Visualização
           </button>
         </div>
       </div>  
@@ -117,6 +142,13 @@
   <p>Desenvolvido por Abel Silva Brandão | Versão 1.0.0</p>
 </footer>
   </div>
-
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const yearSpan = document.getElementById('current-year');
+  if (yearSpan) {
+    yearSpan.textContent = new Date().getFullYear();
+  }
+});
+</script>
 </body>
 </html>

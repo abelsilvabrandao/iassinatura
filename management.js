@@ -152,12 +152,14 @@ function renderSectorsTable(sectors) {
             <td>${sector.name}</td>
             <td>${sector.description || '-'}</td>
             <td>
-                <button onclick="editSector('${sector.id}')" class="btn-edit">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button onclick="deleteSector('${sector.id}')" class="btn-delete">
-                    <i class="fas fa-trash"></i>
-                </button>
+                <div class="action-buttons">
+                    <button onclick="editSector('${sector.id}')" class="btn-edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="deleteSector('${sector.id}')" class="btn-delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
             </td>
         `;
         tbody.appendChild(row);
@@ -166,6 +168,7 @@ function renderSectorsTable(sectors) {
     sectorsContainer.innerHTML = '';
     sectorsContainer.appendChild(table);
 }
+
 
 
 async function handleSectorSubmit(event) {
@@ -460,16 +463,20 @@ function initializeManagement() {
 
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
+            // Evita recarregar se já estiver ativo
+            if (button.classList.contains('active')) return;
+
             const tab = button.dataset.tab;
-            
+
             // Atualiza botões
             tabButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            
+
             // Atualiza conteúdo
             tabContents.forEach(content => content.classList.add('hidden'));
-            document.getElementById(`${tab}-content`).classList.remove('hidden');
-            
+            const selectedContent = document.getElementById(`${tab}-content`);
+            if (selectedContent) selectedContent.classList.remove('hidden');
+
             // Carrega dados
             if (tab === 'units') {
                 loadUnitsList();
@@ -482,19 +489,17 @@ function initializeManagement() {
     // Carregar listas iniciais
     loadUnitsList();
     loadSectorsList();
-    
+
     // Event listeners para botões de adicionar
     document.getElementById('new-unit-button').addEventListener('click', () => {
         clearUnitModal();
         document.getElementById('unit-modal-title').textContent = 'Cadastro de Nova Unidade';
-
         document.getElementById('unit-modal').classList.remove('hidden');
     });
 
     document.getElementById('new-sector-button').addEventListener('click', () => {
         clearSectorModal();
         document.getElementById('sector-modal-title').textContent = 'Cadastro de Novo Setor';
-
         document.getElementById('sector-modal').classList.remove('hidden');
     });
 
@@ -502,7 +507,7 @@ function initializeManagement() {
     document.getElementById('sector-form').addEventListener('submit', handleSectorSubmit);
     document.getElementById('unit-form').addEventListener('submit', handleUnitSubmit);
 
-    // Adicionar evento de logout
+    // Botão de logout
     document.getElementById('logout-button').addEventListener('click', async () => {
         try {
             await signOut(auth);
@@ -511,28 +516,26 @@ function initializeManagement() {
             console.error('Erro ao fazer logout:', error);
             Swal.fire('Erro!', 'Erro ao fazer logout.', 'error');
         }
-        // Evento para botão de adicionar certificação no modal
-
     });
-          // Evento para botão de adicionar certificação no modal
-          const addCertificationButton = document.getElementById("add-certification");
-if (addCertificationButton) {
-  addCertificationButton.addEventListener("click", () => {
-    const certificationsContainer = document.getElementById("certifications-container");
-    const newCertificationInput = document.createElement("div");
-    newCertificationInput.style.display = "flex";
-    newCertificationInput.style.alignItems = "center";
-    newCertificationInput.innerHTML = `
-      <input type="text" class="certification" placeholder="Ex: ISO 9001:2015" style="flex: 1;">
-      <button type="button" class="certification-button remove-certification" style="margin-left: 5px;">-</button>
-    `;
-    certificationsContainer.appendChild(newCertificationInput);
-    newCertificationInput.querySelector(".remove-certification").addEventListener("click", () => {
-      certificationsContainer.removeChild(newCertificationInput);
-    });
-  });
-}
 
+    // Botão de adicionar certificação
+    const addCertificationButton = document.getElementById("add-certification");
+    if (addCertificationButton) {
+        addCertificationButton.addEventListener("click", () => {
+            const certificationsContainer = document.getElementById("certifications-container");
+            const newCertificationInput = document.createElement("div");
+            newCertificationInput.style.display = "flex";
+            newCertificationInput.style.alignItems = "center";
+            newCertificationInput.innerHTML = `
+                <input type="text" class="certification" placeholder="Ex: ISO 9001:2015" style="flex: 1;">
+                <button type="button" class="certification-button remove-certification" style="margin-left: 5px;">-</button>
+            `;
+            certificationsContainer.appendChild(newCertificationInput);
+            newCertificationInput.querySelector(".remove-certification").addEventListener("click", () => {
+                certificationsContainer.removeChild(newCertificationInput);
+            });
+        });
+    }
 }
 
 function formatCnpj(event) {

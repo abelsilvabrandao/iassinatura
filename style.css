@@ -209,11 +209,11 @@ button i {
 }
 
 .signature-actions button {
-  background-color: #145912;
+  background-color: #28a745;
 }
 
 .signature-actions button:hover {
-  background-color: #0d400c;
+  background-color: #218838;
 }
 
 /* RÓTULOS, TELEFONES E BARRAS */
@@ -309,7 +309,7 @@ button i {
 }
 
 #add-unit-button:hover {
-  background-color: #00b377;
+  background-color:#218838;
 }
 
 /* FOOTER */

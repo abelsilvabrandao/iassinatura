@@ -92,6 +92,7 @@ Swal.fire({
     });
   }
 }
+
   // Função para realizar o login
 const login = async (username, password) => {
   try {
@@ -1411,12 +1412,5 @@ document.getElementById('clear-preview-button').addEventListener('click', () => 
   document.getElementById('download-button').style.display = 'none';
   document.getElementById('send-email-button').style.display = 'none';
   document.getElementById('clear-preview-button').style.display = 'none';
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-  const yearSpan = document.getElementById('current-year');
-  if (yearSpan) {
-    yearSpan.textContent = new Date().getFullYear();
-  }
 });
 
