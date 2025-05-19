@@ -988,29 +988,39 @@ Colaborador (a) ${name},
 
 Segue em anexo sua assinatura de e-mail. Por favor, siga as instruções abaixo para adicioná-la:
 
-Passos para adicionar/alterar a assinatura via webmail:
+Passos para adicionar/alterar a assinatura via Webmail:
 
 1. Salve a imagem da assinatura que está em anexo
-2. No Outlook Web, clique em Configurações (ícone de engrenagem)
-3. Procure por "Exibir todas as configurações do Outlook"
-4. Vá em Email > Compose and Reply
-5. Em "Email signature", clique em "New signature"
+2. Acesse: https://mail.intermaritima.com.br/
+3. No Outlook Web, clique em Configurações (ícone de engrenagem)
+4. Procure por "Conta"
+5. Vá em Assinaturas
 6. Clique no ícone de imagem
 7. Selecione a imagem da assinatura que você salvou
-8. Ajuste o tamanho se necessário
-9. Clique em "Save"
+8. Ajuste o tamanho pois estará grande por conta da qualidade
+9. Para novas mensagem selecione o mesmo nome da assinatura
+10. Para Respostas/Reenchaminhamentos selecione o mesmo nome da assinatura
+11. Clique em Guarada após a alteração ou no x que estará salvo.
 
 Em caso de dúvidas, entre em contato com:
 
+Abel Silva
+Celular: (71) 9 9986-3042
+E-mail: abel@intermaritima.com.br
+
 Dionatam Carniel
-Celular: (71) 99601-8476
+Celular: (71) 9 9601-8476
 E-mail: dionatam.carniel@intermaritima.com.br
 
 Alexandre Gadelha
-Celular: (71) 99701-2076
+Celular: (71) 9 9701-2076
 E-mail: alexandre.gadelha@intermaritima.com.br
 
-Tutorial completo: https://youtu.be/9oVGGI31bY8?si=M99cO4JAVStCResJ
+Thales Souza
+Celular: (71) 9 9913-2099 
+E-mail: thales.souza@intermaritima.com.br
+
+Tutorial de video: https://youtu.be/9oVGGI31bY8?si=M99cO4JAVStCResJ
 `;
 
   try {
