@@ -984,7 +984,7 @@ document.getElementById("send-email-button").addEventListener("click", async () 
 
   // Corpo do e-mail com instruções mais detalhadas
   const emailBody = `
-Caro colaborador ${name},
+Colaborador (a) ${name},
 
 Segue em anexo sua assinatura de e-mail. Por favor, siga as instruções abaixo para adicioná-la:
 
@@ -1010,7 +1010,7 @@ Alexandre Gadelha
 Celular: (71) 99701-2076
 E-mail: alexandre.gadelha@intermaritima.com.br
 
-Tutorial completo: https://support.microsoft.com/pt-br/office/criar-uma-assinatura-de-e-mail-a-partir-de-um-modelo-5b02c5ed-1e85-4d2a-a098-9628fe3231d8
+Tutorial completo: https://youtu.be/9oVGGI31bY8?si=M99cO4JAVStCResJ
 `;
 
   try {
