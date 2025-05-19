@@ -999,8 +999,8 @@ Passos para adicionar/alterar a assinatura via Webmail:
 7. Selecione a imagem da assinatura que você salvou
 8. Ajuste o tamanho pois estará grande por conta da qualidade
 9. Para novas mensagem selecione o mesmo nome da assinatura
-10. Para Respostas/Reenchaminhamentos selecione o mesmo nome da assinatura
-11. Clique em Guarada após a alteração ou no x que estará salvo.
+10. Para Respostas/Reencaminhamentos selecione o mesmo nome da assinatura
+11. Clique em Guardar após a alteração ou no x que estará salvo.
 
 Em caso de dúvidas, entre em contato com:
 
