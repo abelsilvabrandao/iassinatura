@@ -1188,8 +1188,8 @@ document.getElementById("signature-form").addEventListener("submit", async (even
         const sectorLines = cleanSector.split('\n');
         
         // Formata o endereço uma vez só
-        const formattedAddress = `${address}, ${number}${complement ? ' ' + complement : ''}${neighborhood ? ', ' + neighborhood : ''}`;
-        
+        const formattedAddress = `${address}, ${number}${complement ? ' - ' + complement : ''}${neighborhood ? ', ' + neighborhood : ''}`;
+
         // Ajusta a posição do nome quando o setor tem duas linhas
         const nameY = sectorLines.length > 1 ? 30 : 40;
         ctx.fillText(name, 270, nameY);
