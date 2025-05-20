@@ -986,6 +986,7 @@ document.getElementById("send-email-button").addEventListener("click", async () 
   const emailBody = `
 Colaborador (a) ${name},
 
+Estamos reenviando a assinatura devido a mudança do CEP do CDEX I e CDEX II e Transporte de 43700-000 para 43720-695 em 29/07/2024.
 Segue em anexo sua assinatura de e-mail. Por favor, siga as instruções abaixo para adicioná-la:
 
 Passos para adicionar/alterar a assinatura via Webmail:
